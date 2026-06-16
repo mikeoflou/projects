@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <style>
+        body {
+            background-color: lightgreen;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        h1 { text-align: center; }
+
+        /* Sidebar Styles */
+        #sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 100;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+        #sidebar a {
+            padding: 15px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: lightgreen;
+            display: block;
+        }
+        #sidebar a:hover { color: green; }
+    </style>
+</head>
+<body>
+
+    <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px;">☰ Menu</button>
+
+    <div id="sidebar" style="color:green">
+        <a href="https://biblegateway.com/">Biblegateway</a>                
+        <a href="https://www.ehbcjeff.com/">EBHC Jeff</a>
+        <a href="https://www.ehbcnewsletterjeff.org">EHBC Newsletter</a>"
+        <a href="https://www.firstharrison.com/">First Harrison</a>
+        <a href="https://onlinebanking.huntington.com/rol/Auth/login.aspx">huntington Bank</a>
+        <a href="https://investor.vanguard.com/">Vanguard</a>
+        <a href="https://my.ivytech.edu/myivy">IvyLearn(Outlook)</a>
+        <a href="https://ivylearn.ivytech.edu/courses/1405942/modules">MyIvy</a>
+        <a href="https://www.va.gov/louisville-health-care/">VA</a>
+    </div>
+
+    <h1>My Home Page</h1>
+
+<script>
+  const menuButton = document.getElementById('toggleNav');
+  const sidebar = document.getElementById('sidebar');
+
+  menuButton.addEventListener('click', () => {
+    if (sidebar.style.width === "250px") {
+      sidebar.style.width = "0";
+    } else {
+      sidebar.style.width = "250px";
+    }
+  });
+</script>
+</body>
+</html>
