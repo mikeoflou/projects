@@ -27,6 +27,30 @@
         .fc .fc-daygrid-day.fc-day-today.selected-date-highlight .fc-daygrid-day-number {
             color: white !important;
         }
+        <style>
+    body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
+    
+    #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
+    #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
+    
+    #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    /* Toolbar and Button Colors */
+    .fc .fc-toolbar-title { color: #000000 !important; }
+    .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
+
+    /* Fix for Date Cell Backgrounds */
+    .selected-date-highlight .fc-daygrid-day-frame,
+    .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
+        background-color: #006400 !important;
+    }
+
+    /* Fix for Date Numbers */
+    .selected-date-highlight .fc-daygrid-day-number,
+    .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+        color: white !important;
+    }
+</style>
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
