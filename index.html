@@ -37,33 +37,35 @@
         #sidebar a:hover { color: green; }
 
         /* Calendar Styling */
-        #calendar {
-            height: 600px;
-            max-width: 900px; 
-            margin: 40px auto; 
-            background: white; 
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+       <style>
+    /* Force the entire calendar container to behave */
+    #calendar {
+        height: 600px;
+        max-width: 900px; 
+        margin: 40px auto; 
+        background: white !important; 
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
 
-        /* Force title to black */
-        .fc .fc-toolbar-title {
-            color: black !important;
-        }
+    /* Force the Title Color */
+    .fc .fc-toolbar-title {
+        color: #000000 !important;
+    }
 
-        /* Force buttons to Dark Green */
-        .fc .fc-button-primary {
-            background-color: #006400 !important;
-            border-color: #006400 !important;
-        }
-        
-        /* Dark Green Highlight for clicked date */
-        .selected-date-highlight {
-            background-color: #006400 !important;
-            color: white !important;
-        }
-    </style>
+    /* Force the Button Colors */
+    .fc .fc-button-primary {
+        background-color: #006400 !important;
+        border-color: #006400 !important;
+    }
+
+    /* The click-to-highlight feature */
+    .selected-date-highlight {
+        background-color: #006400 !important;
+        color: #ffffff !important;
+    }
+</style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
