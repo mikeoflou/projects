@@ -86,6 +86,12 @@
                     // Remove from array using the Unique ID
                     savedEvents = savedEvents.filter(e => e.id !== info.event.id);
                     localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
+                    console.log("Event ID:", info.event.id); // Check this in the console!
+    if (confirm('Delete this event?')) {
+        info.event.remove();
+        savedEvents = savedEvents.filter(e => e.id !== info.event.id);
+        localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
+    }
                 }
             }
         });
