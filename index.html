@@ -5,31 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home Page</title>
     <style>
-        /* Base Page Styles */
         body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
         
-        /* Sidebar Styling */
+        /* Sidebar */
         #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
         #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
         
-        /* Calendar Container */
+        /* Calendar */
         #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        /* FullCalendar Override Colors */
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
-        .fc-daygrid-day-number { color: black !important; }
 
-        /* Highlight & Today Styling */
+        /* Highlights */
         .selected-date-highlight .fc-daygrid-day-frame,
         .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame { background-color: #006400 !important; }
         .selected-date-highlight .fc-daygrid-day-number,
         .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: white !important; }
 
-        /* Two-Column Time Picker */
+        /* Time Picker Columns */
         .time-picker-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .time-column { flex: 1; text-align: center; }
-        .time-column label { display: block; margin-bottom: 5px; font-weight: bold; }
         .time-column select { width: 100%; height: 150px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
@@ -68,22 +63,20 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Menu Toggle Logic
+        // 1. Menu Toggle
         document.getElementById('toggleNav').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
 
-        // 2. Initialize Two-Column Time Pickers
+        // 2. Initialize Time Pickers
         const amSelect = document.getElementById('amSelect');
         const pmSelect = document.getElementById('pmSelect');
-        
         for (let h = 1; h <= 12; h++) {
             let optAm = document.createElement('option');
             optAm.text = `${h.toString().padStart(2, '0')}:00`;
             optAm.value = (h === 12 ? 0 : h).toString().padStart(2, '0') + ":00";
             amSelect.appendChild(optAm);
-
             let optPm = document.createElement('option');
             optPm.text = `${h.toString().padStart(2, '0')}:00`;
             optPm.value = (h === 12 ? 12 : h + 12).toString().padStart(2, '0') + ":00";
@@ -108,6 +101,7 @@
 
         // 4. Save Logic
         document.getElementById('saveBtn').addEventListener('click', () => {
+            // Get value from whichever select is not empty
             let chosenTime = amSelect.value || pmSelect.value;
             let newEvent = {
                 title: document.getElementById('eventTitle').value,
