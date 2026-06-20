@@ -126,17 +126,18 @@
         center: 'title',
         right: 'dayGridMonth'
       },
-      // This function runs every time the calendar renders
+      editable: true,
+      selectable: true,
+      // Combined logic from both scripts:
       dayCellDidMount: function(info) {
-        // Get today's date in YYYY-MM-DD format
         var today = new Date().toISOString().split('T')[0];
-        
-        // If the date being rendered matches today, add our class
         if (info.dateStr === today) {
           info.el.classList.add('today-highlight');
         }
       }
     });
+    
+    // Crucial: This draws the calendar
     calendar.render();
   });
 </script>
