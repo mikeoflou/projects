@@ -99,22 +99,7 @@
     }
   });
 </script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth'
-      },
-      editable: true, // Allows you to drag/drop events
-      selectable: true // Allows you to click to add events
-    });
-    calendar.render();
-  });
-</script>
+<div id="calendar" style="max-width: 900px; margin: 40px auto; background: white;"></div>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
