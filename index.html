@@ -17,9 +17,16 @@
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
         .fc-daygrid-day-number { color: black !important; }
 
-        /* The Highlight */
-        .selected-date-highlight { background-color: #006400 !important; color: white !important; }
-        .selected-date-highlight .fc-daygrid-day-number { color: white !important; }
+        /* The Highlight & Today Override */
+        .selected-date-highlight,
+        .fc .fc-daygrid-day.fc-day-today.selected-date-highlight {
+            background-color: #006400 !important;
+        }
+
+        .selected-date-highlight .fc-daygrid-day-number,
+        .fc .fc-daygrid-day.fc-day-today.selected-date-highlight .fc-daygrid-day-number {
+            color: white !important;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
@@ -54,7 +61,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Dropdown
         const select = document.getElementById('startTime');
         for (let h = 0; h < 24; h++) {
             for (let m = 0; m < 60; m += 30) {
@@ -65,7 +71,6 @@
             }
         }
 
-        // Initialize Calendar
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -79,7 +84,6 @@
         });
         calendar.render();
 
-        // Save Logic
         document.getElementById('saveBtn').addEventListener('click', () => {
             calendar.addEvent({
                 title: document.getElementById('eventTitle').value,
@@ -88,7 +92,6 @@
             document.getElementById('eventModal').style.display = 'none';
         });
 
-        // Menu Toggle
         document.getElementById('toggleNav').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
