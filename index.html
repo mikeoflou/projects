@@ -5,25 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home Page</title>
     <style>
+        /* Base Page Styles */
         body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
         
+        /* Sidebar Styling */
         #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
         #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
         
+        /* Calendar Container */
         #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
+        /* FullCalendar Override Colors */
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
+        .fc-daygrid-day-number { color: black !important; }
 
-        /* Today/Selected Date Styling */
+        /* Highlight & Today Styling */
         .selected-date-highlight .fc-daygrid-day-frame,
-        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
-            background-color: #006400 !important;
-        }
+        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame { background-color: #006400 !important; }
         .selected-date-highlight .fc-daygrid-day-number,
-        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-            color: white !important;
-        }
+        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: white !important; }
+
+        /* Two-Column Time Picker */
+        .time-picker-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .time-column { flex: 1; text-align: center; }
+        .time-column label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .time-column select { width: 100%; height: 150px; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
@@ -47,12 +54,15 @@
     <div id="calendar"></div>
 
     <div id="eventModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-        <div style="background:white; margin:10% auto; padding:20px; width:300px; border-radius:8px;">
+        <div style="background:white; margin:10% auto; padding:20px; width:350px; border-radius:8px;">
             <h3>Add Appointment</h3>
-            <input type="text" id="eventTitle" placeholder="Event Name" style="width:100%; margin-bottom:10px;"><br>
+            <input type="text" id="eventTitle" placeholder="Event Name" style="width:95%; margin-bottom:10px; padding: 5px;"><br>
             <label>Start Time:</label>
-            <select id="startTime" style="width:100%; margin-bottom:20px;"></select>
-            <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px;">Save Event</button>
+            <div class="time-picker-container">
+                <div class="time-column"><label>AM</label><select id="amSelect" size="12"></select></div>
+                <div class="time-column"><label>PM</label><select id="pmSelect" size="12"></select></div>
+            </div>
+            <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save Event</button>
         </div>
     </div>
 
@@ -64,22 +74,24 @@
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
 
-        // 2. Initialize 12-hour Time Dropdown
-        const select = document.getElementById('startTime');
-        select.innerHTML = '';
+        // 2. Initialize Two-Column Time Pickers
+        const amSelect = document.getElementById('amSelect');
+        const pmSelect = document.getElementById('pmSelect');
+        
         for (let h = 1; h <= 12; h++) {
-            ['AM', 'PM'].forEach(ampm => {
-                let option = document.createElement('option');
-                option.text = `${h.toString().padStart(2, '0')}:00 ${ampm}`;
-                let valH = (ampm === 'PM' && h !== 12) ? h + 12 : (ampm === 'AM' && h === 12 ? 0 : h);
-                option.value = `${valH.toString().padStart(2, '0')}:00`;
-                select.appendChild(option);
-            });
+            let optAm = document.createElement('option');
+            optAm.text = `${h.toString().padStart(2, '0')}:00`;
+            optAm.value = (h === 12 ? 0 : h).toString().padStart(2, '0') + ":00";
+            amSelect.appendChild(optAm);
+
+            let optPm = document.createElement('option');
+            optPm.text = `${h.toString().padStart(2, '0')}:00`;
+            optPm.value = (h === 12 ? 12 : h + 12).toString().padStart(2, '0') + ":00";
+            pmSelect.appendChild(optPm);
         }
 
-        // 3. Load Events
+        // 3. Calendar Setup
         let savedEvents = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
-
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -96,9 +108,10 @@
 
         // 4. Save Logic
         document.getElementById('saveBtn').addEventListener('click', () => {
+            let chosenTime = amSelect.value || pmSelect.value;
             let newEvent = {
                 title: document.getElementById('eventTitle').value,
-                start: window.selectedDate + 'T' + document.getElementById('startTime').value,
+                start: window.selectedDate + 'T' + chosenTime,
                 backgroundColor: '#006400',
                 textColor: 'white'
             };
