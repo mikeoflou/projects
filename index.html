@@ -79,11 +79,20 @@
                 dateClick: function(info) {
                     window.selectedDate = info.dateStr;
                     document.getElementById('eventModal').style.display = 'block';
+                },              
+                // Add this eventClick section back in:
+                eventClick: function(info) {
+                    if (confirm('Delete this event?')) {
+                        // 1. Remove from visual calendar
+                        info.event.remove();
+                        // 2. Remove from localStorage
+                        let events = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
+                        events = events.filter(e => e.id !== info.event.id);
+                        localStorage.setItem('myCalendarEvents', JSON.stringify(events));
+                    }
                 }
             });
-            calendar.render();
-
-            document.getElementById('saveBtn').addEventListener('click', function() {
+            calendar.render();            document.getElementById('saveBtn').addEventListener('click', function() {
                 let time = amSelect.value || pmSelect.value;
                 let title = document.getElementById('eventTitle').value;
                 if (!time || !title) return alert("Fill in title and time");
