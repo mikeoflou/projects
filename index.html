@@ -31,19 +31,35 @@
             padding: 15px 32px;
             text-decoration: none;
             font-size: 25px;
-            color: lightgreen;
+            color: white;
             display: block;
         }
-        #sidebar a:hover { color: green; }
+        #sidebar a:hover { 
+            color: green; 
+        }
+        #sidebar a:visited{
+            color:green;
+        }
+
+        #calendar {
+            
+            height: 600px; /* Add this line! */
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+.fc-toolbar-title {
+    color: lightgreen;
+}
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
 
     <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px;">☰ Menu</button>
 
-    <div id="sidebar" style="color:green">
-        <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox"></a>
-        <a href="https://biblegateway.com/">Biblegateway</a>                
+    <div id="sidebar" >
+        <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>        <a href="https://biblegateway.com/">Biblegateway</a>                
         <a href="https://www.ehbcjeff.com/">EBHC Jeff</a>
         <a href="https://www.ehbcnewsletterjeff.org">EHBC Newsletter</a>"
         <a href="https://www.firstharrison.com/">First Harrison</a>
@@ -54,8 +70,7 @@
         <a href="https://www.va.gov/louisville-health-care/">VA</a>
     </div>
 
-    <h1>My Home Page</h1>
-
+    <div id="calendar" style="max-width: 900px; margin: 40px auto; background: white; padding: 20px;"></div>
 <script>
   const menuButton = document.getElementById('toggleNav');
   const sidebar = document.getElementById('sidebar');
@@ -66,6 +81,22 @@
     } else {
       sidebar.style.width = "250px";
     }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth'
+      },
+      editable: true, // Allows you to drag/drop events
+      selectable: true // Allows you to click to add events
+    });
+    calendar.render();
   });
 </script>
 </body>
