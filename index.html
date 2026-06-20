@@ -75,16 +75,16 @@
             dateClick: function(info) {
                 document.querySelectorAll('.selected-date-highlight').forEach(el => el.classList.remove('selected-date-highlight'));
                 info.dayEl.classList.add('selected-date-highlight');
-                // Reset inputs
                 document.getElementById('eventTitle').value = '';
-                amSelect.selectedIndex = -1; pmSelect.selectedIndex = -1;
                 document.getElementById('eventModal').style.display = 'block';
                 window.selectedDate = info.dateStr;
             },
             eventClick: function(info) {
-                if (confirm('Delete: ' + info.event.title + '?')) {
+                if (confirm('Delete this event?')) {
+                    // Remove from UI
                     info.event.remove();
-                    savedEvents = savedEvents.filter(e => e.start !== info.event.startStr);
+                    // Remove from array using the Unique ID we'll assign
+                    savedEvents = savedEvents.filter(e => e.id !== info.event.id);
                     localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
                 }
             }
@@ -94,7 +94,18 @@
         document.getElementById('saveBtn').addEventListener('click', () => {
             let time = amSelect.value || pmSelect.value;
             if (!time) { alert("Please select a time."); return; }
-            let newEvent = { title: document.getElementById('eventTitle').value, start: window.selectedDate + 'T' + time, backgroundColor: '#006400', textColor: 'white' };
+            
+            // Generate a unique ID for this event
+            let uniqueId = Date.now().toString();
+            
+            let newEvent = { 
+                id: uniqueId,
+                title: document.getElementById('eventTitle').value, 
+                start: window.selectedDate + 'T' + time, 
+                backgroundColor: '#006400', 
+                textColor: 'white' 
+            };
+            
             calendar.addEvent(newEvent);
             savedEvents.push(newEvent);
             localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
