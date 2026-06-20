@@ -6,23 +6,13 @@
     <title>Home Page</title>
     <style>
         body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
-        
-        /* Sidebar */
         #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
         #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
-        
-        /* Calendar */
         #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
-
-        /* Highlights */
-        .selected-date-highlight .fc-daygrid-day-frame,
-        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame { background-color: #006400 !important; }
-        .selected-date-highlight .fc-daygrid-day-number,
-        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: white !important; }
-
-        /* Time Picker Columns */
+        .selected-date-highlight .fc-daygrid-day-frame, .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame { background-color: #006400 !important; }
+        .selected-date-highlight .fc-daygrid-day-number, .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: white !important; }
         .time-picker-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .time-column { flex: 1; text-align: center; }
         .time-column select { width: 100%; height: 150px; }
@@ -30,9 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
-
     <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px;">☰ Menu</button>
-    
     <div id="sidebar">
         <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>
         <a href="https://biblegateway.com/">Biblegateway</a>                
@@ -45,9 +33,7 @@
         <a href="https://ivylearn.ivytech.edu/courses/1405942/modules">MyIvy</a>
         <a href="https://www.va.gov/louisville-health-care/">VA</a>
     </div>
-
     <div id="calendar"></div>
-
     <div id="eventModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
         <div style="background:white; margin:10% auto; padding:20px; width:350px; border-radius:8px;">
             <h3>Add Appointment</h3>
@@ -60,16 +46,13 @@
             <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save Event</button>
         </div>
     </div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Menu Toggle
         document.getElementById('toggleNav').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
 
-        // 2. Initialize Time Pickers
         const amSelect = document.getElementById('amSelect');
         const pmSelect = document.getElementById('pmSelect');
         for (let h = 1; h <= 12; h++) {
@@ -83,7 +66,6 @@
             pmSelect.appendChild(optPm);
         }
 
-        // 3. Calendar Setup
         let savedEvents = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -93,28 +75,26 @@
             dateClick: function(info) {
                 document.querySelectorAll('.selected-date-highlight').forEach(el => el.classList.remove('selected-date-highlight'));
                 info.dayEl.classList.add('selected-date-highlight');
+                // Reset inputs
+                document.getElementById('eventTitle').value = '';
+                amSelect.selectedIndex = -1; pmSelect.selectedIndex = -1;
                 document.getElementById('eventModal').style.display = 'block';
                 window.selectedDate = info.dateStr;
             },
             eventClick: function(info) {
-                if (confirm('Delete this event?')) {
+                if (confirm('Delete: ' + info.event.title + '?')) {
                     info.event.remove();
-                    savedEvents = savedEvents.filter(e => e.start !== info.event.startStr || e.title !== info.event.title);
+                    savedEvents = savedEvents.filter(e => e.start !== info.event.startStr);
                     localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
                 }
             }
         });
         calendar.render();
 
-        // 4. Save Logic
         document.getElementById('saveBtn').addEventListener('click', () => {
-            let chosenTime = amSelect.value || pmSelect.value;
-            let newEvent = {
-                title: document.getElementById('eventTitle').value,
-                start: window.selectedDate + 'T' + chosenTime,
-                backgroundColor: '#006400',
-                textColor: 'white'
-            };
+            let time = amSelect.value || pmSelect.value;
+            if (!time) { alert("Please select a time."); return; }
+            let newEvent = { title: document.getElementById('eventTitle').value, start: window.selectedDate + 'T' + time, backgroundColor: '#006400', textColor: 'white' };
             calendar.addEvent(newEvent);
             savedEvents.push(newEvent);
             localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
