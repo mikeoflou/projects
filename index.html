@@ -37,7 +37,7 @@
         #sidebar a:hover { color: green; }
 
         /* Calendar Styling */
-       <style>
+      
     /* Force the entire calendar container to behave */
     #calendar {
         height: 600px;
@@ -65,7 +65,7 @@
         background-color: #006400 !important;
         color: #ffffff !important;
     }
-    <style>
+  
     /* Dark Green Highlight for selected dates */
     .selected-date-highlight {
         background-color: #006400 !important;
@@ -76,7 +76,6 @@
     .fc-daygrid-day-number {
         color: black !important;
     }
-</style>
 </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
@@ -98,6 +97,20 @@
     </div>
 
     <div id="calendar"></div>
+
+    <div id="eventModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div style="background:white; margin:10% auto; padding:20px; width:300px; border-radius:8px;">
+        <h3>Add Appointment</h3>
+        <input type="text" id="eventTitle" placeholder="Event Name" style="width:100%; margin-bottom:10px;"><br>
+        <textarea id="eventDesc" placeholder="Description" style="width:100%; margin-bottom:10px;"></textarea><br>
+        
+        <label>Start Time:</label>
+        <select id="startTime" style="width:100%; margin-bottom:20px;">
+            </select>
+        
+        <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px;">Save Event</button>
+    </div>
+</div>
 
 <script>
   // Menu Toggle Logic
@@ -139,6 +152,43 @@
       }
     });
     calendar.render();
+  });
+</script>
+<script>
+  // 1. Populate Dropdown with 30-min intervals
+  const select = document.getElementById('startTime');
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      let time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+      let option = document.createElement('option');
+      option.value = time;
+      option.text = time;
+      select.appendChild(option);
+    }
+  }
+
+  // 2. Calendar Logic
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      selectable: true,
+      dateClick: function(info) {
+        document.getElementById('eventModal').style.display = 'block';
+        window.selectedDate = info.dateStr; // Store date globally
+      }
+    });
+    calendar.render();
+
+    // 3. Save Button
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      calendar.addEvent({
+        title: document.getElementById('eventTitle').value,
+        start: window.selectedDate + 'T' + document.getElementById('startTime').value,
+        extendedProps: { description: document.getElementById('eventDesc').value }
+      });
+      document.getElementById('eventModal').style.display = 'none';
+    });
   });
 </script>
 </body>
