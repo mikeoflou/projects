@@ -36,53 +36,28 @@
 
     <div id="eventModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
         <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
-            <h3 id="modalTitle">Appointment Details</h3>
-            
+            <h3>Appointment Details</h3>
             <div style="margin-bottom:10px;">
                 <label>Add Event:</label>
                 <input type="text" id="eventTitle" placeholder="Event Name" style="width:100%;">
             </div>
-            
-            <div style="margin-bottom:10px;">
-                <label>Description:</label>
-                <input type="text" id="eventDesc" placeholder="Details" style="width:100%;">
-            </div>
-            
-            <div style="margin-bottom:10px;">
-                <label>Time:</label>
-                <div style="display: flex; gap: 5px;">
-                    <select id="hourSelect" style="width:50%;"></select>
-                    <select id="ampmSelect" style="width:50%;">
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div style="display:flex; gap:10px;">
-                <button id="saveBtn" style="flex:1; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save</button>
-                <button id="deleteBtn" style="flex:1; background:red; color:white; border:none; padding:10px; cursor:pointer;">Delete</button>
-            </div>
+            <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save</button>
+            <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
         </div>
     </div>
 
     <script>
-        (function() {
+        document.addEventListener('DOMContentLoaded', function() {
             let editingEvent = null;
             const modal = document.getElementById('eventModal');
             
-            // Populate hour dropdown
-            const hourSelect = document.getElementById('hourSelect');
-            for (let i = 1; i <= 12; i++) {
-                hourSelect.innerHTML += `<option value="${i}">${i}:00</option>`;
-                hourSelect.innerHTML += `<option value="${i}.5">${i}:30</option>`;
-            }
-
-            document.getElementById('toggleNav').addEventListener('click', function() {
+            // Sidebar toggle
+            document.getElementById('toggleNav').addEventListener('click', () => {
                 const sidebar = document.getElementById('sidebar');
                 sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
             });
 
+            // Calendar
             const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 initialView: 'dayGridMonth',
                 selectable: true,
@@ -91,7 +66,6 @@
                 dateClick: function(info) {
                     editingEvent = null;
                     document.getElementById('eventTitle').value = '';
-                    document.getElementById('eventDesc').value = '';
                     window.selectedDate = info.dateStr;
                     modal.style.display = 'block';
                 },
@@ -99,30 +73,21 @@
                 eventClick: function(info) {
                     editingEvent = info.event;
                     document.getElementById('eventTitle').value = info.event.title;
-                    document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
-                    window.selectedDate = info.event.startStr.split('T')[0];
                     modal.style.display = 'block';
                 }
             });
             calendar.render();
 
+            // Save
             document.getElementById('saveBtn').addEventListener('click', () => {
                 let title = document.getElementById('eventTitle').value;
-                let desc = document.getElementById('eventDesc').value;
-                let hour = parseFloat(document.getElementById('hourSelect').value);
-                let ampm = document.getElementById('ampmSelect').value;
-                
-                let h24 = ampm === 'PM' && hour !== 12 ? hour + 12 : (ampm === 'AM' && hour === 12 ? 0 : hour);
-                let timeStr = h24.toString().padStart(2, '0') + (hour % 1 === 0 ? ':00' : ':30');
-
                 let events = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
+
                 if (editingEvent) {
                     editingEvent.setProp('title', title);
-                    editingEvent.setExtendedProp('description', desc);
-                    editingEvent.setStart(window.selectedDate + 'T' + timeStr);
-                    events = events.map(e => e.id === editingEvent.id ? { ...e, title, extendedProps: { description: desc }, start: window.selectedDate + 'T' + timeStr } : e);
+                    events = events.map(e => e.id === editingEvent.id ? {...e, title: title} : e);
                 } else {
-                    let newEvent = { id: Date.now().toString(), title, extendedProps: { description: desc }, start: window.selectedDate + 'T' + timeStr };
+                    let newEvent = { id: Date.now().toString(), title: title, start: window.selectedDate };
                     calendar.addEvent(newEvent);
                     events.push(newEvent);
                 }
@@ -130,15 +95,9 @@
                 modal.style.display = 'none';
             });
 
-            // Replace your current 'events:' line with this:
-events: (function() {
-    let saved = localStorage.getItem('myCalendarEvents');
-    console.log("Loading from storage:", saved); // This will tell us if it's really empty
-    return saved ? JSON.parse(saved) : [];
-})(),
-
+            // Delete
             document.getElementById('deleteBtn').addEventListener('click', () => {
-                if (editingEvent && confirm('Are you sure?')) {
+                if (editingEvent) {
                     editingEvent.remove();
                     let events = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
                     events = events.filter(e => e.id !== editingEvent.id);
@@ -146,7 +105,7 @@ events: (function() {
                     modal.style.display = 'none';
                 }
             });
-        })();
+        });
     </script>
 </body>
 </html>
