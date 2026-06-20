@@ -130,6 +130,13 @@
                 modal.style.display = 'none';
             });
 
+            // Replace your current 'events:' line with this:
+events: (function() {
+    let saved = localStorage.getItem('myCalendarEvents');
+    console.log("Loading from storage:", saved); // This will tell us if it's really empty
+    return saved ? JSON.parse(saved) : [];
+})(),
+
             document.getElementById('deleteBtn').addEventListener('click', () => {
                 if (editingEvent && confirm('Are you sure?')) {
                     editingEvent.remove();
