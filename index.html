@@ -12,16 +12,14 @@
         
         #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
-        /* Force Calendar Colors */
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
 
-        /* The Highlight & Today Overrides */
+        /* Today/Selected Date Styling */
         .selected-date-highlight .fc-daygrid-day-frame,
         .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
             background-color: #006400 !important;
         }
-
         .selected-date-highlight .fc-daygrid-day-number,
         .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
             color: white !important;
@@ -32,6 +30,7 @@
 <body>
 
     <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px;">☰ Menu</button>
+    
     <div id="sidebar">
         <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>
         <a href="https://biblegateway.com/">Biblegateway</a>                
@@ -59,21 +58,26 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Initialize 12-hour Time Dropdown
+        // 1. Menu Toggle Logic
+        document.getElementById('toggleNav').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
+        });
+
+        // 2. Initialize 12-hour Time Dropdown
         const select = document.getElementById('startTime');
+        select.innerHTML = '';
         for (let h = 1; h <= 12; h++) {
             ['AM', 'PM'].forEach(ampm => {
-                let time = `${h.toString().padStart(2, '0')}:00 ${ampm}`;
                 let option = document.createElement('option');
-                // Use 24h format for the value
+                option.text = `${h.toString().padStart(2, '0')}:00 ${ampm}`;
                 let valH = (ampm === 'PM' && h !== 12) ? h + 12 : (ampm === 'AM' && h === 12 ? 0 : h);
                 option.value = `${valH.toString().padStart(2, '0')}:00`;
-                option.text = time;
                 select.appendChild(option);
             });
         }
 
-        // 2. Load Events from LocalStorage
+        // 3. Load Events
         let savedEvents = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
 
         var calendarEl = document.getElementById('calendar');
@@ -82,17 +86,15 @@
             selectable: true,
             events: savedEvents,
             dateClick: function(info) {
-                // Visual highlight
                 document.querySelectorAll('.selected-date-highlight').forEach(el => el.classList.remove('selected-date-highlight'));
                 info.dayEl.classList.add('selected-date-highlight');
-                
                 document.getElementById('eventModal').style.display = 'block';
                 window.selectedDate = info.dateStr;
             }
         });
         calendar.render();
 
-        // 3. Save Logic
+        // 4. Save Logic
         document.getElementById('saveBtn').addEventListener('click', () => {
             let newEvent = {
                 title: document.getElementById('eventTitle').value,
@@ -100,20 +102,10 @@
                 backgroundColor: '#006400',
                 textColor: 'white'
             };
-
             calendar.addEvent(newEvent);
-            
-            // Persist
             savedEvents.push(newEvent);
             localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
-            
             document.getElementById('eventModal').style.display = 'none';
-        });
-
-        // Menu Toggle
-        document.getElementById('toggleNav').addEventListener('click', () => {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
     });
 </script>
