@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <style>
         body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
@@ -11,8 +11,7 @@
         #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
-        .selected-date-highlight .fc-daygrid-day-frame, .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame { background-color: #006400 !important; }
-        .selected-date-highlight .fc-daygrid-day-number, .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number { color: white !important; }
+        .selected-date-highlight .fc-daygrid-day-frame { background-color: #006400 !important; }
         .time-picker-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .time-column { flex: 1; text-align: center; }
         .time-column select { width: 100%; height: 150px; }
@@ -20,7 +19,9 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
-    <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px;">☰ Menu</button>
+
+    <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px; z-index: 1001; position: relative;">☰ Menu</button>
+    
     <div id="sidebar">
         <a href="https://facebook.com">Facebook</a>
         <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>
@@ -34,11 +35,13 @@
         <a href="https://ivylearn.ivytech.edu/courses/1405942/modules">MyIvy</a>
         <a href="https://www.va.gov/louisville-health-care/">VA</a>
     </div>
+
     <div id="calendar"></div>
+
     <div id="eventModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
         <div style="background:white; margin:10% auto; padding:20px; width:350px; border-radius:8px;">
             <h3>Add Appointment</h3>
-            <input type="text" id="eventTitle" placeholder="Event Name" style="width:95%; margin-bottom:10px; padding: 5px;"><br>
+            <input type="text" id="eventTitle" placeholder="Event Name" style="width:95%; margin-bottom:10px; padding: 5px;">
             <label>Start Time:</label>
             <div class="time-picker-container">
                 <div class="time-column"><label>AM</label><select id="amSelect" size="12"></select></div>
@@ -49,68 +52,50 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('toggleNav').addEventListener('click', () => {
+        (function() {
+            console.log("Script loaded"); // If you don't see this in F12 Console, the file isn't saving correctly.
+
+            document.getElementById('toggleNav').addEventListener('click', function() {
                 const sidebar = document.getElementById('sidebar');
                 sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
             });
 
+            // Populate time selects
             const amSelect = document.getElementById('amSelect');
             const pmSelect = document.getElementById('pmSelect');
             for (let h = 1; h <= 12; h++) {
-                let optAm = document.createElement('option');
-                optAm.text = `${h.toString().padStart(2, '0')}:00`;
-                optAm.value = (h === 12 ? 0 : h).toString().padStart(2, '0') + ":00";
-                amSelect.appendChild(optAm);
-                let optPm = document.createElement('option');
-                optPm.text = `${h.toString().padStart(2, '0')}:00`;
-                optPm.value = (h === 12 ? 12 : h + 12).toString().padStart(2, '0') + ":00";
-                pmSelect.appendChild(optPm);
+                let val = h === 12 ? 0 : h;
+                amSelect.innerHTML += `<option value="${val.toString().padStart(2, '0')}:00">${h.toString().padStart(2, '0')}:00</option>`;
+                let pmVal = h === 12 ? 12 : h + 12;
+                pmSelect.innerHTML += `<option value="${pmVal.toString().padStart(2, '0')}:00">${h.toString().padStart(2, '0')}:00</option>`;
             }
 
-            let savedEvents = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+            // Calendar Logic
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 selectable: true,
-                events: savedEvents,
+                events: JSON.parse(localStorage.getItem('myCalendarEvents') || '[]'),
                 dateClick: function(info) {
-                    document.querySelectorAll('.selected-date-highlight').forEach(el => el.classList.remove('selected-date-highlight'));
-                    info.dayEl.classList.add('selected-date-highlight');
-                    document.getElementById('eventTitle').value = '';
-                    document.getElementById('eventModal').style.display = 'block';
                     window.selectedDate = info.dateStr;
-                },
-                eventClick: function(info) {
-                    if (confirm('Delete this event?')) {
-                        info.event.remove();
-                        savedEvents = savedEvents.filter(e => e.id !== info.event.id);
-                        localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
-                    }
+                    document.getElementById('eventModal').style.display = 'block';
                 }
             });
             calendar.render();
 
-            document.getElementById('saveBtn').addEventListener('click', () => {
+            document.getElementById('saveBtn').addEventListener('click', function() {
                 let time = amSelect.value || pmSelect.value;
-                if (!time) { alert("Please select a time."); return; }
+                let title = document.getElementById('eventTitle').value;
+                if (!time || !title) return alert("Fill in title and time");
                 
-                let uniqueId = Date.now().toString();
-                
-                let newEvent = { 
-                    id: uniqueId,
-                    title: document.getElementById('eventTitle').value, 
-                    start: window.selectedDate + 'T' + time, 
-                    backgroundColor: '#006400', 
-                    textColor: 'white' 
-                };
-                
+                let newEvent = { id: Date.now().toString(), title: title, start: window.selectedDate + 'T' + time };
                 calendar.addEvent(newEvent);
-                savedEvents.push(newEvent);
-                localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
+                let events = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
+                events.push(newEvent);
+                localStorage.setItem('myCalendarEvents', JSON.stringify(events));
                 document.getElementById('eventModal').style.display = 'none';
             });
-        });
+        })();
     </script>
 </body>
 </html>
