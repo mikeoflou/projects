@@ -15,43 +15,17 @@
         /* Force Calendar Colors */
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
-        .fc-daygrid-day-number { color: black !important; }
 
-        /* The Highlight & Today Override */
-        .selected-date-highlight,
-        .fc .fc-daygrid-day.fc-day-today.selected-date-highlight {
+        /* The Highlight & Today Overrides */
+        .selected-date-highlight .fc-daygrid-day-frame,
+        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
             background-color: #006400 !important;
         }
 
         .selected-date-highlight .fc-daygrid-day-number,
-        .fc .fc-daygrid-day.fc-day-today.selected-date-highlight .fc-daygrid-day-number {
+        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
             color: white !important;
         }
-        <style>
-    body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
-    
-    #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
-    #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
-    
-    #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    
-    /* Target the calendar cell specifically for 'today' and your selection */
-.fc .fc-daygrid-day.fc-day-today,
-.fc .fc-daygrid-day.selected-date-highlight {
-    background-color: #006400 !important;
-}
-
-/* Ensure the text color reflects the new background */
-.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number,
-.fc .fc-daygrid-day.selected-date-highlight .fc-daygrid-day-number {
-    color: white !important;
-}
-
-/* Reset any default background that might be forcing white */
-.fc-daygrid-day-frame {
-    background-color: transparent !important;
-}
-</style>
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
@@ -77,7 +51,6 @@
         <div style="background:white; margin:10% auto; padding:20px; width:300px; border-radius:8px;">
             <h3>Add Appointment</h3>
             <input type="text" id="eventTitle" placeholder="Event Name" style="width:100%; margin-bottom:10px;"><br>
-            <textarea id="eventDesc" placeholder="Description" style="width:100%; margin-bottom:10px;"></textarea><br>
             <label>Start Time:</label>
             <select id="startTime" style="width:100%; margin-bottom:20px;"></select>
             <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px;">Save Event</button>
@@ -86,37 +59,58 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // 1. Initialize 12-hour Time Dropdown
         const select = document.getElementById('startTime');
-        for (let h = 0; h < 24; h++) {
-            for (let m = 0; m < 60; m += 30) {
-                let time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+        for (let h = 1; h <= 12; h++) {
+            ['AM', 'PM'].forEach(ampm => {
+                let time = `${h.toString().padStart(2, '0')}:00 ${ampm}`;
                 let option = document.createElement('option');
-                option.value = time; option.text = time;
+                // Use 24h format for the value
+                let valH = (ampm === 'PM' && h !== 12) ? h + 12 : (ampm === 'AM' && h === 12 ? 0 : h);
+                option.value = `${valH.toString().padStart(2, '0')}:00`;
+                option.text = time;
                 select.appendChild(option);
-            }
+            });
         }
+
+        // 2. Load Events from LocalStorage
+        let savedEvents = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
 
         var calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
+            events: savedEvents,
             dateClick: function(info) {
+                // Visual highlight
                 document.querySelectorAll('.selected-date-highlight').forEach(el => el.classList.remove('selected-date-highlight'));
                 info.dayEl.classList.add('selected-date-highlight');
+                
                 document.getElementById('eventModal').style.display = 'block';
                 window.selectedDate = info.dateStr;
             }
         });
         calendar.render();
 
+        // 3. Save Logic
         document.getElementById('saveBtn').addEventListener('click', () => {
-            calendar.addEvent({
+            let newEvent = {
                 title: document.getElementById('eventTitle').value,
-                start: window.selectedDate + 'T' + document.getElementById('startTime').value
-            });
+                start: window.selectedDate + 'T' + document.getElementById('startTime').value,
+                backgroundColor: '#006400',
+                textColor: 'white'
+            };
+
+            calendar.addEvent(newEvent);
+            
+            // Persist
+            savedEvents.push(newEvent);
+            localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
+            
             document.getElementById('eventModal').style.display = 'none';
         });
 
+        // Menu Toggle
         document.getElementById('toggleNav').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
