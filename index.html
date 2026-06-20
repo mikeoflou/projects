@@ -47,68 +47,70 @@
             <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save Event</button>
         </div>
     </div>
-document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('toggleNav').addEventListener('click', () => {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
-        });
 
-        
-        const amSelect = document.getElementById('amSelect');
-        const pmSelect = document.getElementById('pmSelect');
-        for (let h = 1; h <= 12; h++) {
-            let optAm = document.createElement('option');
-            optAm.text = `${h.toString().padStart(2, '0')}:00`;
-            optAm.value = (h === 12 ? 0 : h).toString().padStart(2, '0') + ":00";
-            amSelect.appendChild(optAm);
-            let optPm = document.createElement('option');
-            optPm.text = `${h.toString().padStart(2, '0')}:00`;
-            optPm.value = (h === 12 ? 12 : h + 12).toString().padStart(2, '0') + ":00";
-            pmSelect.appendChild(optPm);
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('toggleNav').addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
+            });
 
-        let savedEvents = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            selectable: true,
-            events: savedEvents,
-            dateClick: function(info) {
-                document.querySelectorAll('.selected-date-highlight').forEach(el => el.classList.remove('selected-date-highlight'));
-                info.dayEl.classList.add('selected-date-highlight');
-                document.getElementById('eventTitle').value = '';
-                document.getElementById('eventModal').style.display = 'block';
-                window.selectedDate = info.dateStr;
-            },
-            eventClick: function(info) {
-                if (confirm('Delete this event?')) {
-                    info.event.remove();
-                    savedEvents = savedEvents.filter(e => e.id !== info.event.id);
-                    localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
-                }
+            const amSelect = document.getElementById('amSelect');
+            const pmSelect = document.getElementById('pmSelect');
+            for (let h = 1; h <= 12; h++) {
+                let optAm = document.createElement('option');
+                optAm.text = `${h.toString().padStart(2, '0')}:00`;
+                optAm.value = (h === 12 ? 0 : h).toString().padStart(2, '0') + ":00";
+                amSelect.appendChild(optAm);
+                let optPm = document.createElement('option');
+                optPm.text = `${h.toString().padStart(2, '0')}:00`;
+                optPm.value = (h === 12 ? 12 : h + 12).toString().padStart(2, '0') + ":00";
+                pmSelect.appendChild(optPm);
             }
-        });
-        calendar.render();
 
-        document.getElementById('saveBtn').addEventListener('click', () => {
-            let time = amSelect.value || pmSelect.value;
-            if (!time) { alert("Please select a time."); return; }
-            
-            let uniqueId = Date.now().toString();
-            
-            let newEvent = { 
-                id: uniqueId,
-                title: document.getElementById('eventTitle').value, 
-                start: window.selectedDate + 'T' + time, 
-                backgroundColor: '#006400', 
-                textColor: 'white' 
-            };
-            
-            calendar.addEvent(newEvent);
-            savedEvents.push(newEvent);
-            localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
-            document.getElementById('eventModal').style.display = 'none';
+            let savedEvents = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                events: savedEvents,
+                dateClick: function(info) {
+                    document.querySelectorAll('.selected-date-highlight').forEach(el => el.classList.remove('selected-date-highlight'));
+                    info.dayEl.classList.add('selected-date-highlight');
+                    document.getElementById('eventTitle').value = '';
+                    document.getElementById('eventModal').style.display = 'block';
+                    window.selectedDate = info.dateStr;
+                },
+                eventClick: function(info) {
+                    if (confirm('Delete this event?')) {
+                        info.event.remove();
+                        savedEvents = savedEvents.filter(e => e.id !== info.event.id);
+                        localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
+                    }
+                }
+            });
+            calendar.render();
+
+            document.getElementById('saveBtn').addEventListener('click', () => {
+                let time = amSelect.value || pmSelect.value;
+                if (!time) { alert("Please select a time."); return; }
+                
+                let uniqueId = Date.now().toString();
+                
+                let newEvent = { 
+                    id: uniqueId,
+                    title: document.getElementById('eventTitle').value, 
+                    start: window.selectedDate + 'T' + time, 
+                    backgroundColor: '#006400', 
+                    textColor: 'white' 
+                };
+                
+                calendar.addEvent(newEvent);
+                savedEvents.push(newEvent);
+                localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
+                document.getElementById('eventModal').style.display = 'none';
+            });
         });
-    });
+    </script>
 </body>
 </html>
