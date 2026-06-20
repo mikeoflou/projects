@@ -39,6 +39,7 @@
         /* Calendar Styling */
       
     /* Force the entire calendar container to behave */
+   /* Force the entire calendar container to behave */
     #calendar {
         height: 600px;
         max-width: 900px; 
@@ -49,23 +50,15 @@
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
-    /* Force the Title Color */
-    .fc .fc-toolbar-title {
-        color: #000000 !important;
+    /* Target the day cell specifically to ensure background application */
+    .fc .fc-daygrid-day.selected-date-highlight {
+        background-color: #006400 !important;
     }
 
-    /* Force the Button Colors */
-    .fc .fc-button-primary {
-        background-color: #006400 !important;
-        border-color: #006400 !important;
-    }
-
-    /* The click-to-highlight feature */
-    .selected-date-highlight {
-        background-color: #006400 !important;
-        color: #ffffff !important;
-    }
-  
+    /* Target the text inside the cell for contrast */
+    .selected-date-highlight .fc-daygrid-day-number {
+        color: white !important;
+    }  
     /* Dark Green Highlight for selected dates */
     .selected-date-highlight {
         background-color: #006400 !important;
