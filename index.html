@@ -95,13 +95,19 @@
                 info.dayEl.classList.add('selected-date-highlight');
                 document.getElementById('eventModal').style.display = 'block';
                 window.selectedDate = info.dateStr;
+            },
+            eventClick: function(info) {
+                if (confirm('Delete this event?')) {
+                    info.event.remove();
+                    savedEvents = savedEvents.filter(e => e.start !== info.event.startStr || e.title !== info.event.title);
+                    localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
+                }
             }
         });
         calendar.render();
 
         // 4. Save Logic
         document.getElementById('saveBtn').addEventListener('click', () => {
-            // Get value from whichever select is not empty
             let chosenTime = amSelect.value || pmSelect.value;
             let newEvent = {
                 title: document.getElementById('eventTitle').value,
