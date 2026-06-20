@@ -35,21 +35,22 @@
     
     #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     
-    /* Toolbar and Button Colors */
-    .fc .fc-toolbar-title { color: #000000 !important; }
-    .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
+    /* Target the calendar cell specifically for 'today' and your selection */
+.fc .fc-daygrid-day.fc-day-today,
+.fc .fc-daygrid-day.selected-date-highlight {
+    background-color: #006400 !important;
+}
 
-    /* Fix for Date Cell Backgrounds */
-    .selected-date-highlight .fc-daygrid-day-frame,
-    .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
-        background-color: #006400 !important;
-    }
+/* Ensure the text color reflects the new background */
+.fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number,
+.fc .fc-daygrid-day.selected-date-highlight .fc-daygrid-day-number {
+    color: white !important;
+}
 
-    /* Fix for Date Numbers */
-    .selected-date-highlight .fc-daygrid-day-number,
-    .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-        color: white !important;
-    }
+/* Reset any default background that might be forcing white */
+.fc-daygrid-day-frame {
+    background-color: transparent !important;
+}
 </style>
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
