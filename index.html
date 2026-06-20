@@ -5,69 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home Page</title>
     <style>
-        body {
-            background-color: lightgreen;
-            font-size: 14px;
-            font-weight: bold;
-            margin: 0;
-            font-family: sans-serif;
-        }
-        h1 { text-align: center; }
+    /* Force title to black */
+    .fc .fc-toolbar-title {
+        color: #000000 !important;
+    }
 
-        /* Sidebar Styles */
-        #sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 100;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-        }
-        #sidebar a {
-            padding: 15px 32px;
-            text-decoration: none;
-            font-size: 25px;
-            color: white;
-            display: block;
-        }
-        #sidebar a:hover { 
-            color: green; 
-        }
-        #sidebar a:visited{
-            color:green;
-        }
+    /* Force buttons to dark green */
+    .fc .fc-button-primary {
+        background-color: #006400 !important; /* Dark Green */
+        border-color: #006400 !important;
+    }
+    
+    /* Hover state for buttons */
+    .fc .fc-button-primary:hover {
+        background-color: #004d00 !important;
+    }
 
-        #calendar {
-            
-            height: 600px; /* Add this line! */
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-/* Forcing the Title Color */
-.fc .fc-toolbar-title {
-    color: black !important;
-}
-
-/* Forcing the Button Color */
-.fc .fc-button-primary {
-    background-color: darkgreen !important;
-    border-color: darkgreen !important;
-}
-
-/* Forcing the Yellow Highlight */
-.fc .fc-day-today {
-    background-color: #fffacd !important;
-}
-.today-highlight {
-    background-color: #fffacd !important; /* LemonChiffon yellow */
-    border: 2px solid green !important;
-}
-    </style>
+    /* Force Today's highlight */
+    .fc .fc-day-today {
+        background-color: #fffacd !important;
+    }
+</style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
