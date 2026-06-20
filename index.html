@@ -83,7 +83,7 @@
                 if (confirm('Delete this event?')) {
                     // Remove from UI
                     info.event.remove();
-                    // Remove from array using the Unique ID we'll assign
+                    // Remove from array using the Unique ID
                     savedEvents = savedEvents.filter(e => e.id !== info.event.id);
                     localStorage.setItem('myCalendarEvents', JSON.stringify(savedEvents));
                 }
@@ -95,7 +95,7 @@
             let time = amSelect.value || pmSelect.value;
             if (!time) { alert("Please select a time."); return; }
             
-            // Generate a unique ID for this event
+            // FIXED: Generate a unique ID for this event
             let uniqueId = Date.now().toString();
             
             let newEvent = { 
