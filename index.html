@@ -62,6 +62,11 @@
   border-color:darkgreen;
 
 }
+/* This gives the current day a light yellow background and bold border */
+.today-highlight {
+    background-color: #fffacd !important; /* LemonChiffon yellow */
+    border: 2px solid green !important;
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
@@ -106,6 +111,31 @@
       },
       editable: true, // Allows you to drag/drop events
       selectable: true // Allows you to click to add events
+    });
+    calendar.render();
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth'
+      },
+      // This function runs every time the calendar renders
+      dayCellDidMount: function(info) {
+        // Get today's date in YYYY-MM-DD format
+        var today = new Date().toISOString().split('T')[0];
+        
+        // If the date being rendered matches today, add our class
+        if (info.dateStr === today) {
+          info.el.classList.add('today-highlight');
+        }
+      }
     });
     calendar.render();
   });
