@@ -13,6 +13,7 @@
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -47,8 +48,10 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let editingEvent = null;
+        // REPLACE THESE WITH YOUR ACTUAL SUPABASE DETAILS
+        const supabase = supabase.createClient('https://saufbyduwfoipmcztzde.supabase.co', 'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9');
+
+        document.addEventListener('DOMContentLoaded', async function() {
             const modal = document.getElementById('eventModal');
             
             // Sidebar toggle
@@ -57,52 +60,31 @@
                 sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
             });
 
-            // Calendar
+            // Load Events from Supabase
+            let { data: events, error } = await supabase.from('events').select('*');
+            if (error) console.error("Error loading events:", error);
+
             const calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
                 initialView: 'dayGridMonth',
                 selectable: true,
-                events: JSON.parse(localStorage.getItem('myCalendarEvents') || '[]'),
+                events: events ? events.map(e => ({id: e.id, title: e.title, start: e.start_date})) : [],
                 
                 dateClick: function(info) {
-                    editingEvent = null;
-                    document.getElementById('eventTitle').value = '';
                     window.selectedDate = info.dateStr;
-                    modal.style.display = 'block';
-                },
-                
-                eventClick: function(info) {
-                    editingEvent = info.event;
-                    document.getElementById('eventTitle').value = info.event.title;
                     modal.style.display = 'block';
                 }
             });
             calendar.render();
 
-            // Save
-            document.getElementById('saveBtn').addEventListener('click', () => {
+            // Save to Supabase
+            document.getElementById('saveBtn').addEventListener('click', async () => {
                 let title = document.getElementById('eventTitle').value;
-                let events = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
-
-                if (editingEvent) {
-                    editingEvent.setProp('title', title);
-                    events = events.map(e => e.id === editingEvent.id ? {...e, title: title} : e);
+                const { data, error } = await supabase.from('events').insert([{ title: title, start_date: window.selectedDate }]);
+                
+                if (!error) {
+                    location.reload(); // Quick way to refresh calendar with new data
                 } else {
-                    let newEvent = { id: Date.now().toString(), title: title, start: window.selectedDate };
-                    calendar.addEvent(newEvent);
-                    events.push(newEvent);
-                }
-                localStorage.setItem('myCalendarEvents', JSON.stringify(events));
-                modal.style.display = 'none';
-            });
-
-            // Delete
-            document.getElementById('deleteBtn').addEventListener('click', () => {
-                if (editingEvent) {
-                    editingEvent.remove();
-                    let events = JSON.parse(localStorage.getItem('myCalendarEvents') || '[]');
-                    events = events.filter(e => e.id !== editingEvent.id);
-                    localStorage.setItem('myCalendarEvents', JSON.stringify(events));
-                    modal.style.display = 'none';
+                    alert("Error saving: " + error.message);
                 }
             });
         });
