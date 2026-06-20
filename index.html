@@ -25,6 +25,10 @@
     .fc .fc-day-today {
         background-color: #fffacd !important;
     }
+    .selected-date-highlight {
+        background-color: green !important;
+        color: white !important;
+    }
 </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
@@ -64,23 +68,28 @@
     
     var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth'
-      },
-      editable: true,
-      selectable: true,
-      // Combined logic from both scripts:
-      dayCellDidMount: function(info) {
-        var today = new Date().toISOString().split('T')[0];
-        if (info.dateStr === today) {
-          info.el.classList.add('today-highlight');
+      selectable: true, // Allows clicking a date
+      
+      // THIS handles the click action
+      dateClick: function(info) {
+        // 1. Remove highlight from any previously selected date
+        var allCells = document.querySelectorAll('.fc-day');
+        allCells.forEach(cell => cell.classList.remove('selected-date-highlight'));
+        
+        // 2. Add highlight to the clicked date
+        info.dayEl.classList.add('selected-date-highlight');
+        
+        // 3. Ask to add an event
+        var eventTitle = prompt('Enter event title for ' + info.dateStr + ':');
+        if (eventTitle) {
+          calendar.addEvent({
+            title: eventTitle,
+            start: info.dateStr,
+            allDay: true
+          });
         }
       }
     });
-    
-    // Crucial: This draws the calendar
     calendar.render();
   });
 </script>
