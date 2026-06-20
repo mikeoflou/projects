@@ -5,78 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home Page</title>
     <style>
-        body {
-            background-color: lightgreen;
-            font-size: 14px;
-            font-weight: bold;
-            margin: 0;
-            font-family: sans-serif;
-        }
-        h1 { text-align: center; }
+        body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
+        
+        #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
+        #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
+        
+        #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* Force Calendar Colors */
+        .fc .fc-toolbar-title { color: #000000 !important; }
+        .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
+        .fc-daygrid-day-number { color: black !important; }
 
-        /* Sidebar Styles */
-        #sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 1000;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-        }
-        #sidebar a {
-            padding: 15px 32px;
-            text-decoration: none;
-            font-size: 25px;
-            color: lightgreen;
-            display: block;
-        }
-        #sidebar a:hover { color: green; }
-
-        /* Calendar Styling */
-      
-    /* Force the entire calendar container to behave */
-   /* Force the entire calendar container to behave */
-    #calendar {
-        height: 600px;
-        max-width: 900px; 
-        margin: 40px auto; 
-        background: white !important; 
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-
-    /* Target the day cell specifically to ensure background application */
-    .fc .fc-daygrid-day.selected-date-highlight {
-        background-color: #006400 !important;
-    }
-
-    /* Target the text inside the cell for contrast */
-    .selected-date-highlight .fc-daygrid-day-number {
-        color: white !important;
-    }  
-    /* Dark Green Highlight for selected dates */
-    .selected-date-highlight {
-        background-color: #006400 !important;
-        color: white !important;
-    }
-
-    /* Make sure the calendar table text stays visible */
-    .fc-daygrid-day-number {
-        color: black !important;
-    }
-</style>
+        /* The Highlight */
+        .selected-date-highlight { background-color: #006400 !important; color: white !important; }
+        .selected-date-highlight .fc-daygrid-day-number { color: white !important; }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
 <body>
 
     <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px;">☰ Menu</button>
-
-    <div id="sidebar" style="color:green">
+    <div id="sidebar">
         <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>
         <a href="https://biblegateway.com/">Biblegateway</a>                
         <a href="https://www.ehbcjeff.com/">EBHC Jeff</a>
@@ -92,79 +42,58 @@
     <div id="calendar"></div>
 
     <div id="eventModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div style="background:white; margin:10% auto; padding:20px; width:300px; border-radius:8px;">
-        <h3>Add Appointment</h3>
-        <input type="text" id="eventTitle" placeholder="Event Name" style="width:100%; margin-bottom:10px;"><br>
-        <textarea id="eventDesc" placeholder="Description" style="width:100%; margin-bottom:10px;"></textarea><br>
-        
-        <label>Start Time:</label>
-        <select id="startTime" style="width:100%; margin-bottom:20px;">
-            </select>
-        
-        <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px;">Save Event</button>
+        <div style="background:white; margin:10% auto; padding:20px; width:300px; border-radius:8px;">
+            <h3>Add Appointment</h3>
+            <input type="text" id="eventTitle" placeholder="Event Name" style="width:100%; margin-bottom:10px;"><br>
+            <textarea id="eventDesc" placeholder="Description" style="width:100%; margin-bottom:10px;"></textarea><br>
+            <label>Start Time:</label>
+            <select id="startTime" style="width:100%; margin-bottom:20px;"></select>
+            <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px;">Save Event</button>
+        </div>
     </div>
-</div>
 
 <script>
-  // 1. Menu Toggle Logic
-  const menuButton = document.getElementById('toggleNav');
-  const sidebar = document.getElementById('sidebar');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Dropdown
+        const select = document.getElementById('startTime');
+        for (let h = 0; h < 24; h++) {
+            for (let m = 0; m < 60; m += 30) {
+                let time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+                let option = document.createElement('option');
+                option.value = time; option.text = time;
+                select.appendChild(option);
+            }
+        }
 
-  menuButton.addEventListener('click', () => {
-    sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
-  });
-
-  // 2. Populate Dropdown with 30-min intervals
-  const select = document.getElementById('startTime');
-  for (let h = 0; h < 24; h++) {
-    for (let m = 0; m < 60; m += 30) {
-      let time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-      let option = document.createElement('option');
-      option.value = time;
-      option.text = time;
-      select.appendChild(option);
-    }
-  }
-
-  // 3. Single Unified Calendar Initialization
-  document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      selectable: true,
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth'
-      },
-      dateClick: function(info) {
-        // Remove highlight from previous selection
-        document.querySelectorAll('.selected-date-highlight').forEach(el => {
-            el.classList.remove('selected-date-highlight');
+        // Initialize Calendar
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            selectable: true,
+            dateClick: function(info) {
+                document.querySelectorAll('.selected-date-highlight').forEach(el => el.classList.remove('selected-date-highlight'));
+                info.dayEl.classList.add('selected-date-highlight');
+                document.getElementById('eventModal').style.display = 'block';
+                window.selectedDate = info.dateStr;
+            }
         });
-        // Add highlight to current selection
-        info.dayEl.classList.add('selected-date-highlight');
-        
-        // Open Modal
-        document.getElementById('eventModal').style.display = 'block';
-        window.selectedDate = info.dateStr;
-      }
-    });
-    calendar.render();
+        calendar.render();
 
-    // 4. Save Button Logic
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      calendar.addEvent({
-        title: document.getElementById('eventTitle').value,
-        start: window.selectedDate + 'T' + document.getElementById('startTime').value,
-        extendedProps: { description: document.getElementById('eventDesc').value }
-      });
-      document.getElementById('eventModal').style.display = 'none';
-      // Clear inputs
-      document.getElementById('eventTitle').value = '';
-      document.getElementById('eventDesc').value = '';
+        // Save Logic
+        document.getElementById('saveBtn').addEventListener('click', () => {
+            calendar.addEvent({
+                title: document.getElementById('eventTitle').value,
+                start: window.selectedDate + 'T' + document.getElementById('startTime').value
+            });
+            document.getElementById('eventModal').style.display = 'none';
+        });
+
+        // Menu Toggle
+        document.getElementById('toggleNav').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
+        });
     });
-  });
 </script>
 </body>
 </html>
