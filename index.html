@@ -106,7 +106,7 @@
 </div>
 
 <script>
-  // Menu Toggle Logic
+  // 1. Menu Toggle Logic
   const menuButton = document.getElementById('toggleNav');
   const sidebar = document.getElementById('sidebar');
 
@@ -114,7 +114,19 @@
     sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
   });
 
-  // Calendar Initialization
+  // 2. Populate Dropdown with 30-min intervals
+  const select = document.getElementById('startTime');
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      let time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+      let option = document.createElement('option');
+      option.value = time;
+      option.text = time;
+      select.appendChild(option);
+    }
+  }
+
+  // 3. Single Unified Calendar Initialization
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -130,49 +142,17 @@
         document.querySelectorAll('.selected-date-highlight').forEach(el => {
             el.classList.remove('selected-date-highlight');
         });
-        // Add highlight to clicked date
+        // Add highlight to current selection
         info.dayEl.classList.add('selected-date-highlight');
         
-        // Add event logic
-        var eventTitle = prompt('Enter event title for ' + info.dateStr + ':');
-        if (eventTitle) {
-          calendar.addEvent({
-            title: eventTitle,
-            start: info.dateStr,
-            allDay: true
-          });
-        }
-      }
-    });
-    calendar.render();
-  });
-
-  // 1. Populate Dropdown with 30-min intervals
-  const select = document.getElementById('startTime');
-  for (let h = 0; h < 24; h++) {
-    for (let m = 0; m < 60; m += 30) {
-      let time = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-      let option = document.createElement('option');
-      option.value = time;
-      option.text = time;
-      select.appendChild(option);
-    }
-  }
-
-  // 2. Calendar Logic
-  document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      selectable: true,
-      dateClick: function(info) {
+        // Open Modal
         document.getElementById('eventModal').style.display = 'block';
-        window.selectedDate = info.dateStr; // Store date globally
+        window.selectedDate = info.dateStr;
       }
     });
     calendar.render();
 
-    // 3. Save Button
+    // 4. Save Button Logic
     document.getElementById('saveBtn').addEventListener('click', () => {
       calendar.addEvent({
         title: document.getElementById('eventTitle').value,
@@ -180,6 +160,9 @@
         extendedProps: { description: document.getElementById('eventDesc').value }
       });
       document.getElementById('eventModal').style.display = 'none';
+      // Clear inputs
+      document.getElementById('eventTitle').value = '';
+      document.getElementById('eventDesc').value = '';
     });
   });
 </script>
