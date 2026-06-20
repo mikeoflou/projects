@@ -47,8 +47,7 @@
             <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save Event</button>
         </div>
     </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('toggleNav').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
@@ -111,8 +110,5 @@
             document.getElementById('eventModal').style.display = 'none';
         });
     });
-
-</script>
-
 </body>
 </html>
