@@ -11,6 +11,8 @@
         #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
+        /* Ensure modal sits on top of everything */
+        #eventModal { z-index: 9999 !important; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -35,31 +37,23 @@
 
     <div id="calendar"></div>
 
-    <div id="eventModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
-        <h3>Appointment Details</h3>
-        
-        <label>Title:</label>
-        <input type="text" id="eventTitle" style="width:100%; margin-bottom:10px;">
-        
-        <label>Description:</label>
-        <input type="text" id="eventDesc" style="width:100%; margin-bottom:10px;">
-        
-        <label>Time (HH:MM):</label>
-        <input type="time" id="eventTime" style="width:100%; margin-bottom:10px;">
-        
-        <label>
-            <input type="checkbox" id="eventAmPm"> PM (Uncheck for AM)
-        </label>
-        
-        <br><br>
-        <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save</button>
-        <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
+    <div id="eventModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+        <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
+            <h3>Appointment Details</h3>
+            <label>Title:</label>
+            <input type="text" id="eventTitle" style="width:100%; margin-bottom:10px;">
+            <label>Description:</label>
+            <input type="text" id="eventDesc" style="width:100%; margin-bottom:10px;">
+            <label>Time (HH:MM):</label>
+            <input type="time" id="eventTime" style="width:100%; margin-bottom:10px;">
+            <label><input type="checkbox" id="eventAmPm"> PM (Uncheck for AM)</label>
+            <br><br>
+            <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save</button>
+            <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
+        </div>
     </div>
-</div>
 
 <script>
-    // 1. Initialize Supabase
     const mySupabase = supabase.createClient(
         'https://saufbyduwfoipmcztzde.supabase.co', 
         'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
@@ -67,48 +61,31 @@
 
     document.addEventListener('DOMContentLoaded', async function() {
         const modal = document.getElementById('eventModal');
-        const toggleNav = document.getElementById('toggleNav');
         const calendarEl = document.getElementById('calendar');
 
-        // 2. Sidebar toggle
-        toggleNav.addEventListener('click', () => {
+        document.getElementById('toggleNav').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
 
-        // Close sidebar when clicking outside
-        document.addEventListener('click', (event) => {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.style.width === "250px" && !sidebar.contains(event.target) && event.target !== toggleNav) {
-                sidebar.style.width = "0";
-            }
-        });
+        // Close logic
+        window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
-        // 3. Load Events from Supabase
         let { data: events, error } = await mySupabase.from('events').select('*');
-        if (error) console.error("Error loading events:", error);
 
-        // 4. Initialize FullCalendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
             events: events ? events.map(e => ({
-                id: e.id, 
-                title: e.title, 
-                start: e.start_date,
-                description: e.Description,
-                time: e.time
+                id: e.id, title: e.title, start: e.start_date,
+                extendedProps: { description: e.Description, time: e.time, am_pm: e.am_pm }
             })) : [],
-            
-            dateClick: function(info) {
+            dateClick: (info) => {
                 window.selectedEventId = null;
-                document.getElementById('eventTitle').value = '';
-                document.getElementById('eventDesc').value = '';
                 window.selectedDate = info.dateStr;
                 modal.style.display = 'block';
             },
-
-            eventClick: function(info) {
+            eventClick: (info) => {
                 window.selectedEventId = info.event.id;
                 document.getElementById('eventTitle').value = info.event.title;
                 document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
@@ -117,39 +94,27 @@
         });
         calendar.render();
 
-        // 5. Save Button
         document.getElementById('saveBtn').addEventListener('click', async () => {
-            const titleVal = document.getElementById('eventTitle').value;
-            const descVal = document.getElementById('eventDesc').value;
-            const timeVal = document.getElementById('eventTime').value;
-            const amPmVal = document.getElementById('eventAmPm').checked;
+            const payload = {
+                title: document.getElementById('eventTitle').value,
+                Description: document.getElementById('eventDesc').value,
+                time: document.getElementById('eventTime').value + ":00",
+                am_pm: document.getElementById('eventAmPm').checked
+            };
 
-            const { data, error } = await mySupabase.from('events').insert([{ 
-                title: titleVal, 
-                start_date: window.selectedDate,
-                Description: descVal,
-                time: timeVal ? timeVal + ":00" : "12:00:00",
-                am_pm: amPmVal
-            }]);
-            
-            if (!error) {
-                location.reload();
+            let query = mySupabase.from('events');
+            if (window.selectedEventId) {
+                await query.update(payload).eq('id', window.selectedEventId);
             } else {
-                alert("Error saving: " + error.message);
+                await query.insert([{ ...payload, start_date: window.selectedDate }]);
             }
+            location.reload();
         });
 
-        // 6. Delete Button
         document.getElementById('deleteBtn').addEventListener('click', async () => {
-            if (!window.selectedEventId) {
-                alert("No event selected.");
-                return;
-            }
-            const { error } = await mySupabase.from('events').delete().eq('id', window.selectedEventId);
-            if (!error) {
+            if (window.selectedEventId) {
+                await mySupabase.from('events').delete().eq('id', window.selectedEventId);
                 location.reload();
-            } else {
-                alert("Error deleting: " + error.message);
             }
         });
     });
