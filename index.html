@@ -97,20 +97,21 @@
         const modal = document.getElementById('eventModal');
         const calendarEl = document.getElementById('calendar');
 
-        // Toggle Nav
-        document.getElementById('toggleNav').addEventListener('click', () => {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
-        });
+        // Ensure this is inside your DOMContentLoaded event
+document.getElementById('toggleNav').addEventListener('click', () => {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
+});
 
-        // Toggle Calendar
-        document.getElementById('calendarToggle').addEventListener('click', () => {
-            const calCont = document.getElementById('calendarContainer');
-            calCont.classList.toggle('hidden');
-            if (!calCont.classList.contains('hidden')) {
-                calendar.render(); // Ensure it renders properly when shown
-            }
-        });
+// Make sure this matches the ID of your calendar toggle button
+document.getElementById('calendarToggle').addEventListener('click', () => {
+    const calCont = document.getElementById('calendarContainer');
+    calCont.classList.toggle('hidden');
+    // If the calendar exists, re-render it so it doesn't look squashed
+    if (!calCont.classList.contains('hidden')) {
+        calendar.render(); 
+    }
+});
 
         window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
