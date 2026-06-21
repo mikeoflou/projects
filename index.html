@@ -187,6 +187,12 @@
         });
         calendar.render();
 
+        // Force the style after the calendar renders
+        const todayCell = document.querySelector('.fc-day-today');
+        if (todayCell) {
+            todayCell.style.setProperty('background-color', 'lightgreen', 'important');
+        }
+
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const payload = {
                 title: document.getElementById('eventTitle').value,
