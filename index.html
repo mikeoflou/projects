@@ -95,8 +95,8 @@
             displayEventTime: true,
             events: events ? events.map(e => ({
                 id: e.id, 
-                // Display time + title on calendar
-                title: (e.time ? e.time.substring(0, 5) + " " : "") + e.title,
+                // Displays time AND title (e.g., "09:00 breakfast")
+                title: (e.time ? e.time.substring(0, 5) + " " : "") + (e.title || ""),
                 start: e.start_date,
                 extendedProps: { description: e.Description, time: e.time }
             })) : [],
@@ -112,6 +112,7 @@
 
             eventClick: (info) => {
                 window.selectedEventId = info.event.id;
+                // Cleans the time prefix off so you can edit just the title
                 document.getElementById('eventTitle').value = info.event.title.replace(/^\d{2}:\d{2}\s/, '');
                 document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
                 if (info.event.extendedProps.time) {
