@@ -58,28 +58,7 @@
     </div>
 </div>
 
-   <script>
-    document.addEventListener('DOMContentLoaded', async function() {
-    // ... your existing code ...
-
-    // ADD THIS NEW SECTION: Close sidebar when clicking outside
-    document.addEventListener('click', (event) => {
-        const sidebar = document.getElementById('sidebar');
-        const toggleNav = document.getElementById('toggleNav');
-        
-        // Check if the click was OUTSIDE the sidebar AND not on the menu button
-        if (sidebar.style.width === "250px" && 
-            !sidebar.contains(event.target) && 
-            event.target !== toggleNav) {
-            sidebar.style.width = "0";
-        }
-    });
-
-    // ... rest of your code ...
-});
-        // 1. Initialize Supabase (Use your actual Public Anon Key here)
-      // Ensure you are using the specific client configuration for newer keys
-
+<script>
     // 1. Initialize Supabase
     const mySupabase = supabase.createClient(
         'https://saufbyduwfoipmcztzde.supabase.co', 
@@ -113,7 +92,12 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
-            events: events ? events.map(e => ({id: e.id, title: e.title, start: e.Date})) : [],
+            // Mapping to match your database columns
+            events: events ? events.map(e => ({
+                id: e.id, 
+                title: e.title, 
+                start: e.start_date 
+            })) : [],
             dateClick: function(info) {
                 window.selectedDate = info.dateStr;
                 modal.style.display = 'block';
@@ -121,24 +105,29 @@
         });
         calendar.render();
 
-        // 5. Save to Supabase (Matches your 'Date' and 'title' columns)
-       // 5. Save to Supabase (Matches your 'start_date' and 'title' columns)
+        // 5. Save to Supabase (Capturing all new inputs)
         document.getElementById('saveBtn').addEventListener('click', async () => {
-            let titleVal = document.getElementById('eventTitle').value;
+            const titleVal = document.getElementById('eventTitle').value;
+            const descVal = document.getElementById('eventDesc').value;
+            const timeVal = document.getElementById('eventTime').value; // e.g., "14:30"
+            const amPmVal = document.getElementById('eventAmPm').checked; // true for PM
+
             const { data, error } = await mySupabase.from('events').insert([{ 
                 title: titleVal, 
-                start_date: window.selectedDate // Matches your 'start_date' column
+                start_date: window.selectedDate,
+                Description: descVal,
+                time: timeVal ? timeVal + ":00" : "12:00:00",
+                am_pm: amPmVal
             }]);
             
             if (!error) {
-                location.reload();
+                location.reload(); // Refresh to show new event
             } else {
                 alert("Error saving: " + error.message);
+                console.error("Supabase Error:", error);
             }
         });
     });
 </script>
-  
-
 </body>
 </html>
