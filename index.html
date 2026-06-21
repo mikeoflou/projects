@@ -111,11 +111,12 @@
         calendar.render();
 
         // 5. Save to Supabase (Matches your 'Date' and 'title' columns)
+       // 5. Save to Supabase (Matches your 'start_date' and 'title' columns)
         document.getElementById('saveBtn').addEventListener('click', async () => {
             let titleVal = document.getElementById('eventTitle').value;
             const { data, error } = await mySupabase.from('events').insert([{ 
                 title: titleVal, 
-                Date: window.selectedDate 
+                start_date: window.selectedDate // Matches your 'start_date' column
             }]);
             
             if (!error) {
