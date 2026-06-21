@@ -85,6 +85,7 @@
     document.addEventListener('DOMContentLoaded', async function() {
         const modal = document.getElementById('eventModal');
         const calendarEl = document.getElementById('calendar');
+        // Moved these INSIDE to ensure they aren't null when the script runs
         const calCont = document.getElementById('calendarContainer');
         const sidebar = document.getElementById('sidebar');
 
@@ -100,6 +101,16 @@
             calCont.classList.toggle('hidden');
             if (!calCont.classList.contains('hidden')) {
                 calendar.render(); 
+            }
+        });
+
+        // Close sidebar/calendar when clicking outside
+        document.addEventListener('click', (event) => {
+            if (sidebar.style.width === "250px" && !sidebar.contains(event.target) && event.target.id !== 'toggleNav') {
+                sidebar.style.width = "0";
+            }
+            if (!calCont.classList.contains('hidden') && !calCont.contains(event.target) && event.target.id !== 'calendarToggle') {
+                calCont.classList.add('hidden');
             }
         });
 
