@@ -31,12 +31,15 @@
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
         #eventModal { z-index: 9999 !important; }
         .fc-event-title { color: black !important; font-weight: bold !important; }
+       
         .fc .fc-day-today {
+          background-color: lightgreen !important;
+        }
 
-          /* Only style the cell that is today */
-  
-         .fc .fc-day-today {
-    background-color: lightgreen !important;
+        /* Also ensure the background isn't being overridden by an internal calendar theme */
+        .fc-theme-standard .fc-day-today {
+            background-color: lightgreen !important;
+}
 }
 
 /* Also ensure the background isn't being overridden by an internal calendar theme */
