@@ -47,56 +47,53 @@
         </div>
     </div>
 
-    <script>
-        // REPLACE THESE WITH YOUR ACTUAL SUPABASE DETAILS
-        
-        const mySupabase = supabase.createClient('https://saufbyduwfoipmcztzde.supabase.co');
+   <script>
+        // 1. Initialize Supabase (Use your actual Public Anon Key here)
+        const mySupabase = supabase.createClient(
+            'https://saufbyduwfoipmcztzde.supabase.co', 
+            'YOUR_ACTUAL_ANON_PUBLIC_KEY_HERE'
+        );
+
         document.addEventListener('DOMContentLoaded', async function() {
             const modal = document.getElementById('eventModal');
-            
-            // Sidebar toggle
-            document.getElementById('toggleNav').addEventListener('click', () => {
+            const toggleNav = document.getElementById('toggleNav');
+            const calendarEl = document.getElementById('calendar');
+
+            // 2. Sidebar toggle
+            toggleNav.addEventListener('click', () => {
                 const sidebar = document.getElementById('sidebar');
                 sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
             });
 
-            // Load Events from Supabase
-           // 1. Initialize with your URL and KEY
-// Ensure you are using the URL from the settings page
-const mySupabase = supabase.createClient(
-    'https://saufbyduwfoipmcztzde.supabase.co', 
-    'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9' 
-);
+            // 3. Load Events from Supabase
+            let { data: events, error } = await mySupabase.from('events').select('*');
+            if (error) console.error("Error loading events:", error);
 
-document.addEventListener('DOMContentLoaded', async function() {
-    console.log("DOM fully loaded and parsed"); // Check if this shows in the console!
-    
-    const modal = document.getElementById('eventModal');
-    const toggleNav = document.getElementById('toggleNav');
-    
-    if (!toggleNav) {
-        console.error("Could not find toggleNav button!");
-    } else {
-        toggleNav.addEventListener('click', () => {
-            console.log("Menu button clicked!"); // Check if this shows when you click the menu
-            const sidebar = document.getElementById('sidebar');
-            sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
+            // 4. Initialize FullCalendar
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                events: events ? events.map(e => ({id: e.id, title: e.title, start: e.start_date})) : [],
+                dateClick: function(info) {
+                    window.selectedDate = info.dateStr;
+                    modal.style.display = 'block';
+                }
+            });
+            calendar.render();
+
+            // 5. Save to Supabase
+            document.getElementById('saveBtn').addEventListener('click', async () => {
+                let title = document.getElementById('eventTitle').value;
+                const { data, error } = await mySupabase.from('events').insert([{ title: title, start_date: window.selectedDate }]);
+                
+                if (!error) {
+                    location.reload();
+                } else {
+                    alert("Error saving: " + error.message);
+                }
+            });
         });
-    }
-    // ... rest of your code
-});
+    </script>
 
-    // 3. AND USE mySupabase HERE
-    document.getElementById('saveBtn').addEventListener('click', async () => {
-        let title = document.getElementById('eventTitle').value;
-        const { data, error } = await mySupabase.from('events').insert([{ title: title, start_date: window.selectedDate }]);
-        
-        if (!error) {
-            location.reload(); 
-        } else {
-            alert("Error saving: " + error.message);
-        }
-    });
-});
 </body>
 </html>
