@@ -68,51 +68,65 @@
 });
         // 1. Initialize Supabase (Use your actual Public Anon Key here)
       // Ensure you are using the specific client configuration for newer keys
-const mySupabase = supabase.createClient(
-    'https://saufbyduwfoipmcztzde.supabase.co', 
-    'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
-);
 
-        document.addEventListener('DOMContentLoaded', async function() {
-            const modal = document.getElementById('eventModal');
-            const toggleNav = document.getElementById('toggleNav');
-            const calendarEl = document.getElementById('calendar');
+    // 1. Initialize Supabase
+    const mySupabase = supabase.createClient(
+        'https://saufbyduwfoipmcztzde.supabase.co', 
+        'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
+    );
 
-            // 2. Sidebar toggle
-            toggleNav.addEventListener('click', () => {
-                const sidebar = document.getElementById('sidebar');
-                sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
-            });
+    document.addEventListener('DOMContentLoaded', async function() {
+        const modal = document.getElementById('eventModal');
+        const toggleNav = document.getElementById('toggleNav');
+        const calendarEl = document.getElementById('calendar');
 
-            // 3. Load Events from Supabase
-            let { data: events, error } = await mySupabase.from('events').select('*');
-            if (error) console.error("Error loading events:", error);
-
-            // 4. Initialize FullCalendar
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                selectable: true,
-                events: events ? events.map(e => ({id: e.id, title: e.title, start: e.start_date})) : [],
-                dateClick: function(info) {
-                    window.selectedDate = info.dateStr;
-                    modal.style.display = 'block';
-                }
-            });
-            calendar.render();
-
-            // 5. Save to Supabase
-            document.getElementById('saveBtn').addEventListener('click', async () => {
-                let title = document.getElementById('eventTitle').value;
-                const { data, error } = await mySupabase.from('events').insert([{ title: title, start_date: window.selectedDate }]);
-                
-                if (!error) {
-                    location.reload();
-                } else {
-                    alert("Error saving: " + error.message);
-                }
-            });
+        // 2. Sidebar toggle
+        toggleNav.addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
-    </script>
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', (event) => {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.style.width === "250px" && !sidebar.contains(event.target) && event.target !== toggleNav) {
+                sidebar.style.width = "0";
+            }
+        });
+
+        // 3. Load Events from Supabase
+        let { data: events, error } = await mySupabase.from('events').select('*');
+        if (error) console.error("Error loading events:", error);
+
+        // 4. Initialize FullCalendar
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            selectable: true,
+            events: events ? events.map(e => ({id: e.id, title: e.title, start: e.Date})) : [],
+            dateClick: function(info) {
+                window.selectedDate = info.dateStr;
+                modal.style.display = 'block';
+            }
+        });
+        calendar.render();
+
+        // 5. Save to Supabase (Matches your 'Date' and 'title' columns)
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            let titleVal = document.getElementById('eventTitle').value;
+            const { data, error } = await mySupabase.from('events').insert([{ 
+                title: titleVal, 
+                Date: window.selectedDate 
+            }]);
+            
+            if (!error) {
+                location.reload();
+            } else {
+                alert("Error saving: " + error.message);
+            }
+        });
+    });
+</script>
+  
 
 </body>
 </html>
