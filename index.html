@@ -74,15 +74,13 @@
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
 
-        // Close sidebar when clicking outside
+        // Close sidebar/modal when clicking outside
         document.addEventListener('click', (event) => {
             const sidebar = document.getElementById('sidebar');
             if (sidebar.style.width === "250px" && !sidebar.contains(event.target) && event.target !== document.getElementById('toggleNav')) {
                 sidebar.style.width = "0";
             }
         });
-
-        // Close modal when clicking outside
         window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
         // 3. Load Events
@@ -92,10 +90,10 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
-            displayEventTime: true,
+            displayEventTime: false, // We will include time in the title string ourselves
             events: events ? events.map(e => ({
                 id: e.id, 
-                // Displays time AND title (e.g., "09:00 breakfast")
+                // Explicitly show: "HH:MM Title"
                 title: (e.time ? e.time.substring(0, 5) + " " : "") + (e.title || ""),
                 start: e.start_date,
                 extendedProps: { description: e.Description, time: e.time }
@@ -112,7 +110,7 @@
 
             eventClick: (info) => {
                 window.selectedEventId = info.event.id;
-                // Cleans the time prefix off so you can edit just the title
+                // Remove the HH:MM part from the title when opening the modal
                 document.getElementById('eventTitle').value = info.event.title.replace(/^\d{2}:\d{2}\s/, '');
                 document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
                 if (info.event.extendedProps.time) {
@@ -123,7 +121,7 @@
         });
         calendar.render();
 
-        // 5. Save Button (Supports Insert & Update)
+        // 5. Save Button
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const payload = {
                 title: document.getElementById('eventTitle').value,
@@ -132,11 +130,10 @@
                 am_pm: document.getElementById('eventAmPm').checked
             };
 
-            let query = mySupabase.from('events');
             if (window.selectedEventId) {
-                await query.update(payload).eq('id', window.selectedEventId);
+                await mySupabase.from('events').update(payload).eq('id', window.selectedEventId);
             } else {
-                await query.insert([{ ...payload, start_date: window.selectedDate }]);
+                await mySupabase.from('events').insert([{ ...payload, start_date: window.selectedDate }]);
             }
             location.reload();
         });
