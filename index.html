@@ -92,25 +92,37 @@
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
-            // Mapping to match your database columns
             events: events ? events.map(e => ({
                 id: e.id, 
                 title: e.title, 
-                start: e.start_date 
+                start: e.start_date,
+                description: e.Description,
+                time: e.time
             })) : [],
+            
             dateClick: function(info) {
+                window.selectedEventId = null;
+                document.getElementById('eventTitle').value = '';
+                document.getElementById('eventDesc').value = '';
                 window.selectedDate = info.dateStr;
+                modal.style.display = 'block';
+            },
+
+            eventClick: function(info) {
+                window.selectedEventId = info.event.id;
+                document.getElementById('eventTitle').value = info.event.title;
+                document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
                 modal.style.display = 'block';
             }
         });
         calendar.render();
 
-        // 5. Save to Supabase (Capturing all new inputs)
+        // 5. Save Button
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const titleVal = document.getElementById('eventTitle').value;
             const descVal = document.getElementById('eventDesc').value;
-            const timeVal = document.getElementById('eventTime').value; // e.g., "14:30"
-            const amPmVal = document.getElementById('eventAmPm').checked; // true for PM
+            const timeVal = document.getElementById('eventTime').value;
+            const amPmVal = document.getElementById('eventAmPm').checked;
 
             const { data, error } = await mySupabase.from('events').insert([{ 
                 title: titleVal, 
@@ -121,37 +133,26 @@
             }]);
             
             if (!error) {
-                location.reload(); // Refresh to show new event
+                location.reload();
             } else {
                 alert("Error saving: " + error.message);
-                console.error("Supabase Error:", error);
+            }
+        });
+
+        // 6. Delete Button
+        document.getElementById('deleteBtn').addEventListener('click', async () => {
+            if (!window.selectedEventId) {
+                alert("No event selected.");
+                return;
+            }
+            const { error } = await mySupabase.from('events').delete().eq('id', window.selectedEventId);
+            if (!error) {
+                location.reload();
+            } else {
+                alert("Error deleting: " + error.message);
             }
         });
     });
-    // Add this logic to your script
-document.getElementById('deleteBtn').addEventListener('click', async () => {
-    // We need to know which event to delete. 
-    // Since you haven't clicked a specific event yet to "load" it, 
-    // we need to make sure we have the ID.
-    
-    // For now, if you just want to delete the last one you added, or if 
-    // you implement a way to select an existing event, you'd use:
-    if (!window.selectedEventId) {
-        alert("No event selected to delete!");
-        return;
-    }
-
-    const { error } = await mySupabase
-        .from('events')
-        .delete()
-        .eq('id', window.selectedEventId);
-
-    if (!error) {
-        location.reload(); // Refresh to remove from calendar
-    } else {
-        alert("Error deleting: " + error.message);
-    }
-});
 </script>
 </body>
 </html>
