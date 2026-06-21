@@ -27,15 +27,35 @@
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
         #eventModal { z-index: 9999 !important; }
         .fc-event-title { color: black !important; font-weight: bold !important; }
-    </style>
+        <style>
+    /* Add this container to hold your header buttons */
+    #headerBar {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Space between the calendar icon and menu button */
+        padding: 10px;
+    }
+
+    #calendarToggle, #toggleNav {
+        font-size: 20px; 
+        cursor: pointer; 
+        padding: 5px 10px;
+    }
+
+    /* Keep your existing styles for calendarContainer and others below this */
+</style>
+
+    
+   </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <button id="calendarToggle" style="font-size: 20px; cursor: pointer; margin: 10px; z-index: 1001; position: relative;">📅</button>
-    <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px; z-index: 1001; position: relative;">☰ Menu</button>
-    
+    <div id="headerBar">
+        <button id="calendarToggle">📅</button>
+        <button id="toggleNav">☰ Menu</button>
+    </div>
     <div id="sidebar">
         <a href="https://facebook.com">Facebook</a>
         <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>
@@ -48,10 +68,6 @@
         <a href="https://my.ivytech.edu/myivy">IvyLearn(Outlook)</a>
         <a href="https://ivylearn.ivytech.edu/courses/1405942/modules">MyIvy</a>
         <a href="https://www.va.gov/louisville-health-care/">VA</a>
-    </div>
-
-    <div id="calendarContainer" class="hidden">
-        <div id="calendar"></div>
     </div>
 
     <div id="eventModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
