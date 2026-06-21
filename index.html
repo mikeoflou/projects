@@ -4,12 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
+        
         #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
         #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
         
-        /* Updated container styling for toggle functionality */
         .hidden { display: none; }
         #calendarContainer {
             position: absolute;
@@ -23,40 +24,24 @@
         }
         #calendar { height: 500px; width: 800px; background: white !important; }
 
+        #headerBar { display: flex; align-items: center; gap: 10px; padding: 10px; }
+        #calendarToggle, #toggleNav { font-size: 20px; cursor: pointer; padding: 5px 10px; z-index: 1001; }
+
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
         #eventModal { z-index: 9999 !important; }
         .fc-event-title { color: black !important; font-weight: bold !important; }
-        <style>
-    /* Add this container to hold your header buttons */
-    #headerBar {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Space between the calendar icon and menu button */
-        padding: 10px;
-    }
-
-    #calendarToggle, #toggleNav {
-        font-size: 20px; 
-        cursor: pointer; 
-        padding: 5px 10px;
-    }
-
-    /* Keep your existing styles for calendarContainer and others below this */
-</style>
-
-    
-   </style>
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
     <div id="headerBar">
-<button id="calendarToggle"><i class="fas fa-calendar"></i></button>
-<button id="toggleNav">☰ Menu</button>
+        <button id="calendarToggle"><i class="fas fa-calendar"></i></button>
+        <button id="toggleNav">☰ Menu</button>
     </div>
+    
     <div id="sidebar">
         <a href="https://facebook.com">Facebook</a>
         <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>
@@ -69,6 +54,10 @@
         <a href="https://my.ivytech.edu/myivy">IvyLearn(Outlook)</a>
         <a href="https://ivylearn.ivytech.edu/courses/1405942/modules">MyIvy</a>
         <a href="https://www.va.gov/louisville-health-care/">VA</a>
+    </div>
+
+    <div id="calendarContainer" class="hidden">
+        <div id="calendar"></div>
     </div>
 
     <div id="eventModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
@@ -96,22 +85,23 @@
     document.addEventListener('DOMContentLoaded', async function() {
         const modal = document.getElementById('eventModal');
         const calendarEl = document.getElementById('calendar');
+        const calCont = document.getElementById('calendarContainer');
+        const sidebar = document.getElementById('sidebar');
 
-        // Ensure this is inside your DOMContentLoaded event
-document.getElementById('toggleNav').addEventListener('click', () => {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
-});
+        // Toggle Nav
+        document.getElementById('toggleNav').addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
+        });
 
-// Make sure this matches the ID of your calendar toggle button
-document.getElementById('calendarToggle').addEventListener('click', () => {
-    const calCont = document.getElementById('calendarContainer');
-    calCont.classList.toggle('hidden');
-    // If the calendar exists, re-render it so it doesn't look squashed
-    if (!calCont.classList.contains('hidden')) {
-        calendar.render(); 
-    }
-});
+        // Toggle Calendar
+        document.getElementById('calendarToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            calCont.classList.toggle('hidden');
+            if (!calCont.classList.contains('hidden')) {
+                calendar.render(); 
+            }
+        });
 
         window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
