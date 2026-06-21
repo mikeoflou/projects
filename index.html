@@ -58,6 +58,7 @@
     </div>
 
 <script>
+    // 1. Initialize Supabase
     const mySupabase = supabase.createClient(
         'https://saufbyduwfoipmcztzde.supabase.co', 
         'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
@@ -67,37 +68,61 @@
         const modal = document.getElementById('eventModal');
         const calendarEl = document.getElementById('calendar');
 
+        // Sidebar toggle
         document.getElementById('toggleNav').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
 
-        // Close logic
+        // Close sidebar when clicking outside
+        document.addEventListener('click', (event) => {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.style.width === "250px" && !sidebar.contains(event.target) && event.target !== document.getElementById('toggleNav')) {
+                sidebar.style.width = "0";
+            }
+        });
+
+        // Close modal when clicking outside
         window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
+        // 3. Load Events
         let { data: events, error } = await mySupabase.from('events').select('*');
 
+        // 4. Initialize Calendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
+            displayEventTime: true,
             events: events ? events.map(e => ({
-                id: e.id, title: e.title, start: e.start_date,
-                extendedProps: { description: e.Description, time: e.time, am_pm: e.am_pm }
+                id: e.id, 
+                // Display time + title on calendar
+                title: (e.time ? e.time.substring(0, 5) + " " : "") + e.title,
+                start: e.start_date,
+                extendedProps: { description: e.Description, time: e.time }
             })) : [],
+            
             dateClick: (info) => {
                 window.selectedEventId = null;
                 window.selectedDate = info.dateStr;
+                document.getElementById('eventTitle').value = '';
+                document.getElementById('eventDesc').value = '';
+                document.getElementById('eventTime').value = '';
                 modal.style.display = 'block';
             },
+
             eventClick: (info) => {
                 window.selectedEventId = info.event.id;
-                document.getElementById('eventTitle').value = info.event.title;
+                document.getElementById('eventTitle').value = info.event.title.replace(/^\d{2}:\d{2}\s/, '');
                 document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
+                if (info.event.extendedProps.time) {
+                    document.getElementById('eventTime').value = info.event.extendedProps.time.substring(0, 5);
+                }
                 modal.style.display = 'block';
             }
         });
         calendar.render();
 
+        // 5. Save Button (Supports Insert & Update)
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const payload = {
                 title: document.getElementById('eventTitle').value,
@@ -115,6 +140,7 @@
             location.reload();
         });
 
+        // 6. Delete Button
         document.getElementById('deleteBtn').addEventListener('click', async () => {
             if (window.selectedEventId) {
                 await mySupabase.from('events').delete().eq('id', window.selectedEventId);
