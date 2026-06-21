@@ -48,6 +48,24 @@
     </div>
 
    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+    // ... your existing code ...
+
+    // ADD THIS NEW SECTION: Close sidebar when clicking outside
+    document.addEventListener('click', (event) => {
+        const sidebar = document.getElementById('sidebar');
+        const toggleNav = document.getElementById('toggleNav');
+        
+        // Check if the click was OUTSIDE the sidebar AND not on the menu button
+        if (sidebar.style.width === "250px" && 
+            !sidebar.contains(event.target) && 
+            event.target !== toggleNav) {
+            sidebar.style.width = "0";
+        }
+    });
+
+    // ... rest of your code ...
+});
         // 1. Initialize Supabase (Use your actual Public Anon Key here)
       // Ensure you are using the specific client configuration for newer keys
 const mySupabase = supabase.createClient(
