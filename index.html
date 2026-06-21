@@ -17,6 +17,17 @@
         color: black !important;
         font-weight: bold !important;
     }
+    .hidden {
+  display: none;
+}
+
+#calendarContainer {
+  /* Add styling here to make it look like a popup or sidebar */
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -56,7 +67,11 @@
             <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
         </div>
     </div>
+<button id="calendarToggle">📅</button>
+<button id="menuButton">☰ Menu</button>
 
+<div id="calendarContainer" class="hidden">
+  </div>
 <script>
     // 1. Initialize Supabase
     const mySupabase = supabase.createClient(
@@ -146,6 +161,10 @@
             }
         });
     });
+    document.getElementById('calendarToggle').addEventListener('click', function() {
+  const cal = document.getElementById('calendarContainer');
+  cal.classList.toggle('hidden');
+});
 </script>
 </body>
 </html>
