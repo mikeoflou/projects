@@ -36,16 +36,27 @@
     <div id="calendar"></div>
 
     <div id="eventModal" style="display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-        <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
-            <h3>Appointment Details</h3>
-            <div style="margin-bottom:10px;">
-                <label>Add Event:</label>
-                <input type="text" id="eventTitle" placeholder="Event Name" style="width:100%;">
-            </div>
-            <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save</button>
-            <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
-        </div>
+    <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
+        <h3>Appointment Details</h3>
+        
+        <label>Title:</label>
+        <input type="text" id="eventTitle" style="width:100%; margin-bottom:10px;">
+        
+        <label>Description:</label>
+        <input type="text" id="eventDesc" style="width:100%; margin-bottom:10px;">
+        
+        <label>Time (HH:MM):</label>
+        <input type="time" id="eventTime" style="width:100%; margin-bottom:10px;">
+        
+        <label>
+            <input type="checkbox" id="eventAmPm"> PM (Uncheck for AM)
+        </label>
+        
+        <br><br>
+        <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save</button>
+        <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
     </div>
+</div>
 
    <script>
     document.addEventListener('DOMContentLoaded', async function() {
