@@ -37,9 +37,12 @@
 </head>
 <body>
 
-    <div id="headerBar">
-        <button id="calendarToggle"><i class="fas fa-calendar"></i></button>
+   <div id="headerBar">
+        <button id="calendarToggle" style="font-size: 20px; cursor: pointer; padding: 5px 10px; z-index: 1001;">&#128197;</button>
         <button id="toggleNav">☰ Menu</button>
+        <div id="weather-info" style="margin-left: 20px; font-size: 16px; color: #333;">
+            <span id="date-time"></span> | <span id="weather">Loading weather...</span>
+        </div>
     </div>
     
     <div id="sidebar">
@@ -85,9 +88,30 @@
     document.addEventListener('DOMContentLoaded', async function() {
         const modal = document.getElementById('eventModal');
         const calendarEl = document.getElementById('calendar');
-        // Moved these INSIDE to ensure they aren't null when the script runs
         const calCont = document.getElementById('calendarContainer');
         const sidebar = document.getElementById('sidebar');
+        
+        // Weather & Date setup
+        const dateTimeEl = document.getElementById('date-time');
+        const weatherEl = document.getElementById('weather');
+        const API_KEY = 'YOUR_OPENWEATHER_API_KEY'; // REPLACE WITH YOUR KEY
+        const CITY = 'Jeffersonville';
+
+        setInterval(() => {
+            dateTimeEl.textContent = new Date().toLocaleString();
+        }, 1000);
+
+        async function fetchWeather() {
+            try {
+                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=imperial&appid=${API_KEY}`);
+                const data = await response.json();
+                weatherEl.textContent = `${Math.round(data.main.temp)}°F, ${data.weather[0].main}`;
+            } catch (error) {
+                weatherEl.textContent = "Weather unavailable";
+            }
+        }
+        fetchWeather();
+        setInterval(fetchWeather, 600000);
 
         // Toggle Nav
         document.getElementById('toggleNav').addEventListener('click', (e) => {
@@ -104,7 +128,6 @@
             }
         });
 
-        // Close sidebar/calendar when clicking outside
         document.addEventListener('click', (event) => {
             if (sidebar.style.width === "250px" && !sidebar.contains(event.target) && event.target.id !== 'toggleNav') {
                 sidebar.style.width = "0";
