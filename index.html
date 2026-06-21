@@ -22,7 +22,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.2);
             z-index: 900;
         }
-        #calendar { height: 500px; width: 800px; background: white !important; }
+        #calendar { height: 500px; width: 800px; background: beige !important; }
 
         #headerBar { display: flex; align-items: center; gap: 10px; padding: 10px; }
         #calendarToggle, #toggleNav { font-size: 20px; cursor: pointer; padding: 5px 10px; z-index: 1001; }
@@ -35,8 +35,14 @@
 
           /* Only style the cell that is today */
   
-          #calendar .fc .fc-day-today {
-            background-color: lightgreen !important;
+         .fc .fc-day-today {
+    background-color: lightgreen !important;
+}
+
+/* Also ensure the background isn't being overridden by an internal calendar theme */
+.fc-theme-standard .fc-day-today {
+    background-color: lightgreen !important;
+}
 }
 }
     </style>
