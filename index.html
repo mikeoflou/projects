@@ -8,32 +8,32 @@
         body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
         #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
         #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
-        #calendar { height: 600px; max-width: 900px; margin: 40px auto; background: white !important; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* Updated container styling for toggle functionality */
+        .hidden { display: none; }
+        #calendarContainer {
+            position: absolute;
+            top: 60px;
+            left: 10px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            z-index: 900;
+        }
+        #calendar { height: 500px; width: 800px; background: white !important; }
+
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
-        /* Ensure modal sits on top of everything */
         #eventModal { z-index: 9999 !important; }
-        .fc-event-title {
-        color: black !important;
-        font-weight: bold !important;
-    }
-    .hidden {
-  display: none;
-}
-
-#calendarContainer {
-  /* Add styling here to make it look like a popup or sidebar */
-  position: absolute;
-  background: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-}
+        .fc-event-title { color: black !important; font-weight: bold !important; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
+    <button id="calendarToggle" style="font-size: 20px; cursor: pointer; margin: 10px; z-index: 1001; position: relative;">📅</button>
     <button id="toggleNav" style="font-size: 20px; cursor: pointer; margin: 10px; z-index: 1001; position: relative;">☰ Menu</button>
     
     <div id="sidebar">
@@ -50,7 +50,9 @@
         <a href="https://www.va.gov/louisville-health-care/">VA</a>
     </div>
 
-    <div id="calendar"></div>
+    <div id="calendarContainer" class="hidden">
+        <div id="calendar"></div>
+    </div>
 
     <div id="eventModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
         <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
@@ -67,13 +69,8 @@
             <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
         </div>
     </div>
-<button id="calendarToggle">📅</button>
-<button id="menuButton">☰ Menu</button>
 
-<div id="calendarContainer" class="hidden">
-  </div>
 <script>
-    // 1. Initialize Supabase
     const mySupabase = supabase.createClient(
         'https://saufbyduwfoipmcztzde.supabase.co', 
         'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
@@ -83,32 +80,31 @@
         const modal = document.getElementById('eventModal');
         const calendarEl = document.getElementById('calendar');
 
-        // Sidebar toggle
+        // Toggle Nav
         document.getElementById('toggleNav').addEventListener('click', () => {
             const sidebar = document.getElementById('sidebar');
             sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
         });
 
-        // Close sidebar/modal when clicking outside
-        document.addEventListener('click', (event) => {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.style.width === "250px" && !sidebar.contains(event.target) && event.target !== document.getElementById('toggleNav')) {
-                sidebar.style.width = "0";
+        // Toggle Calendar
+        document.getElementById('calendarToggle').addEventListener('click', () => {
+            const calCont = document.getElementById('calendarContainer');
+            calCont.classList.toggle('hidden');
+            if (!calCont.classList.contains('hidden')) {
+                calendar.render(); // Ensure it renders properly when shown
             }
         });
+
         window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
-        // 3. Load Events
-        let { data: events, error } = await mySupabase.from('events').select('*');
+        let { data: events } = await mySupabase.from('events').select('*');
 
-        // 4. Initialize Calendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
-            displayEventTime: false, // We will include time in the title string ourselves
+            displayEventTime: false,
             events: events ? events.map(e => ({
                 id: e.id, 
-                // Explicitly show: "HH:MM Title"
                 title: (e.time ? e.time.substring(0, 5) + " " : "") + (e.title || ""),
                 start: e.start_date,
                 extendedProps: { description: e.Description, time: e.time }
@@ -117,15 +113,11 @@
             dateClick: (info) => {
                 window.selectedEventId = null;
                 window.selectedDate = info.dateStr;
-                document.getElementById('eventTitle').value = '';
-                document.getElementById('eventDesc').value = '';
-                document.getElementById('eventTime').value = '';
                 modal.style.display = 'block';
             },
 
             eventClick: (info) => {
                 window.selectedEventId = info.event.id;
-                // Remove the HH:MM part from the title when opening the modal
                 document.getElementById('eventTitle').value = info.event.title.replace(/^\d{2}:\d{2}\s/, '');
                 document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
                 if (info.event.extendedProps.time) {
@@ -136,7 +128,6 @@
         });
         calendar.render();
 
-        // 5. Save Button
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const payload = {
                 title: document.getElementById('eventTitle').value,
@@ -153,7 +144,6 @@
             location.reload();
         });
 
-        // 6. Delete Button
         document.getElementById('deleteBtn').addEventListener('click', async () => {
             if (window.selectedEventId) {
                 await mySupabase.from('events').delete().eq('id', window.selectedEventId);
@@ -161,10 +151,6 @@
             }
         });
     });
-    document.getElementById('calendarToggle').addEventListener('click', function() {
-  const cal = document.getElementById('calendarContainer');
-  cal.classList.toggle('hidden');
-});
 </script>
 </body>
 </html>
