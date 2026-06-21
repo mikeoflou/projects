@@ -128,6 +128,30 @@
             }
         });
     });
+    // Add this logic to your script
+document.getElementById('deleteBtn').addEventListener('click', async () => {
+    // We need to know which event to delete. 
+    // Since you haven't clicked a specific event yet to "load" it, 
+    // we need to make sure we have the ID.
+    
+    // For now, if you just want to delete the last one you added, or if 
+    // you implement a way to select an existing event, you'd use:
+    if (!window.selectedEventId) {
+        alert("No event selected to delete!");
+        return;
+    }
+
+    const { error } = await mySupabase
+        .from('events')
+        .delete()
+        .eq('id', window.selectedEventId);
+
+    if (!error) {
+        location.reload(); // Refresh to remove from calendar
+    } else {
+        alert("Error deleting: " + error.message);
+    }
+});
 </script>
 </body>
 </html>
