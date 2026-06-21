@@ -62,9 +62,10 @@
 
             // Load Events from Supabase
            // 1. Initialize with your URL and KEY
+// Ensure you are using the URL from the settings page
 const mySupabase = supabase.createClient(
     'https://saufbyduwfoipmcztzde.supabase.co', 
-    'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9' // <--- Make sure this is added!
+    'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9' 
 );
 
 document.addEventListener('DOMContentLoaded', async function() {
