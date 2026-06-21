@@ -49,10 +49,11 @@
 
    <script>
         // 1. Initialize Supabase (Use your actual Public Anon Key here)
-        const mySupabase = supabase.createClient(
-            'https://saufbyduwfoipmcztzde.supabase.co', 
-            'YOUR_ACTUAL_ANON_PUBLIC_KEY_HERE'
-        );
+      // Ensure you are using the specific client configuration for newer keys
+const mySupabase = supabase.createClient(
+    'https://saufbyduwfoipmcztzde.supabase.co', 
+    'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
+);
 
         document.addEventListener('DOMContentLoaded', async function() {
             const modal = document.getElementById('eventModal');
