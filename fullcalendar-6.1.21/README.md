@@ -24,8 +24,7 @@ The [FullCalendar Standard Bundle](bundle) is easier to install than individual 
 
 Install the FullCalendar core package and any plugins you plan to use:
 
-```sh
-npm install @fullcalendar/core @fullcalendar/interaction @fullcalendar/daygrid
+```shnpm install @fullcalendar/core @fullcalendar/interaction @fullcalendar/daygrid
 ```
 
 ## Usage
