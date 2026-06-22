@@ -101,7 +101,10 @@
             <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
         </div>
     </div>
-
+    <form action="https://gemini.google.com/app" method="GET" target="_blank" style="display:inline;">
+      <input type="text" name="q" placeholder="Ask Gemini..." required>
+      <button type="submit">Search</button>
+    </form>
 <script>
     const mySupabase = supabase.createClient(
         'https://saufbyduwfoipmcztzde.supabase.co', 
