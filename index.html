@@ -57,11 +57,11 @@
   <div id="headerBar">
     <button id="calendarToggle">&#128197;</button>
     <button id="toggleNav">☰ Menu</button>
-    
-    <div id="ai-search" style="margin-left: auto; display: flex; align-items: center;">
-        <input type="text" id="ai-input" placeholder="Ask Gemini..." style="padding: 5px;">
-        <button id="ai-submit" style="margin-left: 5px;">Search</button>
-    </div>
+   <form action="https://gemini.google.com/app" method="GET" target="_blank" style="display:inline;">
+      <input type="text" name="q" placeholder="Ask Gemini..." required>
+      <button type="submit">Search</button>
+    </form>  
+   
 
     <div id="weather-info" style="margin-left: 20px; font-size: 16px; color: #333;">
         <span id="date-time"></span> | <span id="weather">Loading weather...</span>
@@ -101,10 +101,7 @@
             <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
         </div>
     </div>
-    <form action="https://gemini.google.com/app" method="GET" target="_blank" style="display:inline;">
-      <input type="text" name="q" placeholder="Ask Gemini..." required>
-      <button type="submit">Search</button>
-    </form>
+   
 <script>
     const mySupabase = supabase.createClient(
         'https://saufbyduwfoipmcztzde.supabase.co', 
