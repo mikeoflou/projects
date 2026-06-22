@@ -34,7 +34,6 @@
         
         .fc-theme-standard .fc-day-today { background-color: lightgreen !important; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -42,8 +41,8 @@
     <button id="toggleNav">☰ Menu</button>
     <button id="calendarToggle">📅 Calendar</button>
     
-    <form action="https://gemini.google.com/app" method="GET" target="_blank" style="display:inline;">
-      <input type="text" name="q" placeholder="Ask Gemini..." required>
+    <form id="geminiSearchForm" style="display:inline;">
+      <input type="text" id="searchQuery" placeholder="Ask Gemini..." required>
       <button type="submit">Search</button>
     </form>  
 
@@ -85,8 +84,11 @@
           <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
       </div>
   </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
    
 <script>
+    // This is now guaranteed to work because the CDN script above is processed first
     const mySupabase = supabase.createClient(
         'https://saufbyduwfoipmcztzde.supabase.co', 
         'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
@@ -136,18 +138,24 @@
         });
 
         // Toggle Calendar Visibility
-        let { data: events } = await mySupabase.from('events').select('*');
+        let events = [];
+        try {
+            let { data } = await mySupabase.from('events').select('*');
+            if (data) events = data;
+        } catch (err) {
+            console.error("Error loading Supabase events:", err);
+        }
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             selectable: true,
             displayEventTime: false,
-            events: events ? events.map(e => ({
+            events: events.map(e => ({
                 id: e.id, 
                 title: (e.time ? e.time.substring(0, 5) + " " : "") + (e.title || ""),
                 start: e.start_date,
                 extendedProps: { description: e.Description, time: e.time }
-            })) : [],
+            })),
             
             dateClick: (info) => {
                 window.selectedEventId = null;
@@ -176,6 +184,13 @@
             if (!calCont.classList.contains('hidden')) {
                 calendar.updateSize();
             }
+        });
+
+        // Intercept Search Form Submission to prevent window breakout
+        document.getElementById('geminiSearchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            const queryText = document.getElementById('searchQuery').value;
+            alert("Searching Gemini for: " + queryText);
         });
 
         // Close modal setup
