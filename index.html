@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
         
@@ -29,31 +33,10 @@
 
         .fc .fc-toolbar-title { color: #000000 !important; }
         .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
-        #eventModal { z-index: 9999 !important; }
-        .fc-event-title { color: black !important; font-weight: bold !important; }
-       
-        .fc .fc-day-today {
-          background-color: lightgreen !important;
-        }
-
-        /* Also ensure the background isn't being overridden by an internal calendar theme */
-        .fc-theme-standard .fc-day-today {
-            background-color: lightgreen !important;
-}
-
-
-/* Also ensure the background isn't being overridden by an internal calendar theme */
-.fc-theme-standard .fc-day-today {
-    background-color: lightgreen !important;
-}
-
-  </style>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net;">    
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-</head>
-<body>
+        
+        .fc-theme-standard .fc-day-today { background-color: lightgreen !important; }
+    </style>
+</head><body>
 
   <div id="headerBar">
     <button id="calendarToggle">&#128197;</button>
