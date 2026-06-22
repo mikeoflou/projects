@@ -6,7 +6,6 @@
     <title>Home Page</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
-    
     <style>
         body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
         
@@ -101,6 +100,12 @@
             white-space: nowrap;
         }
     </style>
+    <script>
+    // If the page is not already index.html, force it to index.html
+    if (window.location.pathname !== '/index.html' && window.location.pathname !== '/') {
+        window.location.href = '/index.html';
+    }
+</script>
 </head>
 <body>
 
