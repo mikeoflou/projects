@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
     
     <style>
@@ -86,9 +87,9 @@
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
    
 <script>
-    // This is now guaranteed to work because the CDN script above is processed first
     const mySupabase = supabase.createClient(
         'https://saufbyduwfoipmcztzde.supabase.co', 
         'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
@@ -186,7 +187,7 @@
             }
         });
 
-        // Intercept Search Form Submission to prevent window breakout
+        // Intercept Search Form Submission
         document.getElementById('geminiSearchForm').addEventListener('submit', function(e) {
             e.preventDefault(); 
             const queryText = document.getElementById('searchQuery').value;
