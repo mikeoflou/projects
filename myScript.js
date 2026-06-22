@@ -1,6 +1,6 @@
 const mySupabase = supabase.createClient(
     'https://saufbyduwfoipmcztzde.supabase.co', 
-    'sb_publishable_IIuSQYyD5K-dNMokGY2xZg_nCrGNus9'
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhdWZieWR1d2ZvaXBtY3p0emRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5NjM1MDgsImV4cCI6MjA5NzUzOTUwOH0.4pPYL-bCvKgpkQXPfqakUJjqo3LUeieHXCS1tBPET3s' // Paste the key you just copied here
 );
 
 document.addEventListener('DOMContentLoaded', async function() {
