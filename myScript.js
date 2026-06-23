@@ -123,16 +123,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 });
-// Function to display the output
-function displayAIResponse(response) {
+// Assuming your search button has id="search-btn"
+document.getElementById('search-btn').addEventListener('click', () => {
     const outputField = document.getElementById('ai-output');
-    outputField.value = response; // This puts the text into the box
-}
-function appendToOutput(textChunk) {
-    const outputField = document.getElementById('ai-output');
-    outputField.value += textChunk; // Appends the new piece of text
-    
-    // Optional: Auto-scroll to the bottom
-    outputField.scrollTop = outputField.scrollHeight;
-}
-document.getElementById('ai-output').value = '';
+    const query = document.querySelector('input[type="text"]').value; // Adjust selector as needed
+
+    // 1. Clear the box only when a new search starts
+    outputField.value = '';
+
+    // 2. Show the status message
+    outputField.value = "Searching Gemini for: " + query + "...";
+
+    // 3. Trigger your AI search logic here
+    // performSearch(query); 
+});
