@@ -4,16 +4,19 @@ const mySupabase = supabase.createClient(
 );
 
 document.addEventListener('DOMContentLoaded', async function() {
+    // --- Elements ---
     const modal = document.getElementById('eventModal');
     const calendarEl = document.getElementById('calendar');
     const calCont = document.getElementById('calendarContainer');
     const sidebar = document.getElementById('sidebar');
-    
     const dateTimeEl = document.getElementById('date-time');
     const weatherEl = document.getElementById('weather');
+    const outputField = document.getElementById('ai-output');
+    
     const API_KEY = 'd1e6fb784b1050cf34f0c8f0b552db49';
     const CITY = 'Jeffersonville';
 
+    // --- Time and Weather ---
     setInterval(() => {
         dateTimeEl.textContent = new Date().toLocaleString();
     }, 1000);
@@ -32,17 +35,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     fetchWeather();
     setInterval(fetchWeather, 600000);
 
+    // --- Sidebar and Nav ---
     document.getElementById('toggleNav').addEventListener('click', (e) => {
         e.stopPropagation();
         sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
     });
 
     document.addEventListener('click', (e) => {
-        if (sidebar.style.width === "250px" && !sidebar.contains(e.target) && e.target.id !== 'toggleNav') {
+        if (sidebar && sidebar.style.width === "250px" && !sidebar.contains(e.target) && e.target.id !== 'toggleNav') {
             sidebar.style.width = "0";
         }
     });
 
+    // --- Calendar Logic ---
     let events = [];
     try {
         let { data } = await mySupabase.from('events').select('*');
@@ -84,18 +89,29 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('calendarToggle').addEventListener('click', (e) => {
         e.stopPropagation();
         calCont.classList.toggle('hidden');
-        if (!calCont.classList.contains('hidden')) {
-            calendar.updateSize();
+        if (!calCont.classList.contains('hidden')) calendar.updateSize();
+    });
+
+    // --- Unified Gemini Search Listener ---
+    document.getElementById('geminiSearchForm').addEventListener('submit', async function(e) {
+        e.preventDefault(); 
+        const queryText = document.getElementById('searchQuery').value;
+        outputField.value = "Searching Gemini for: " + queryText + "...";
+
+        try {
+            const response = await fetch('YOUR_ACTUAL_WORKER_URL', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: queryText })
+            });
+            const data = await response.json();
+            outputField.value = data.answer; 
+        } catch (error) {
+            outputField.value = "Sorry, I couldn't connect to the AI. Please check your API configuration.";
         }
     });
 
-    document.getElementById('geminiSearchForm').addEventListener('submit', function(e) {
-        e.preventDefault(); 
-        const queryText = document.getElementById('searchQuery').value;
-        const outputField = document.getElementById('ai-output');
-        outputField.value = "Searching Gemini for: " + queryText + "...";
-    });
-
+    // --- Modal Controls ---
     window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
     document.getElementById('saveBtn').addEventListener('click', async () => {
@@ -122,71 +138,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 });
 
-// Function to display the output
-// --- SEARCH FORM LISTENER ---
-    document.getElementById('geminiSearchForm').addEventListener('submit', async function(e) {
-        e.preventDefault(); 
-        const queryText = document.getElementById('searchQuery').value;
-        const outputField = document.getElementById('ai-output');
-        
-        // 1. Show working state
-        outputField.value = "Searching Gemini for: " + queryText + "...";
-
-        try {
-            // 2. Perform actual fetch (Ensure YOUR_API_ENDPOINT is replaced with your real URL)
-            const response = await fetch('YOUR_API_ENDPOINT', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: queryText })
-            });
-
-            const data = await response.json();
-            // 3. Update the box with the real result
-            outputField.value = data.answer; 
-        } catch (error) {
-            outputField.value = "Sorry, I couldn't connect to the AI. Please check your API configuration.";
-        }
-    });
-
-    window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
-
-    // ... (rest of your saveBtn and deleteBtn code)
-}); // This closes the DOMContentLoaded block
-
 // --- HELPER FUNCTIONS (Outside the DOMContentLoaded block) ---
 function displayAIResponse(response) {
-    const outputField = document.getElementById('ai-output');
-    outputField.value = response;
+    document.getElementById('ai-output').value = response;
 }
-
-function appendToOutput(textChunk) {
-    const outputField = document.getElementById('ai-output');
-    outputField.value += textChunk;
-    outputField.scrollTop = outputField.scrollHeight;
-}
-export default {
-  async fetch(request, env) {
-    // 1. Handle CORS preflight (this stops the "interference" issues)
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST", "Access-Control-Allow-Headers": "Content-Type" }});
-    }
-
-    const { prompt } = await request.json();
-
-    // 2. Call the Gemini API
-  const response = await fetch('/api/gemini', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: queryText })
-});
-
-    const data = await response.json();
-    const answer = data.candidates[0].content.parts[0].text;
-
-    // 3. Return the answer with CORS headers
-    return new Response(JSON.stringify({ answer }), {
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-    });
-  }
-};
-
