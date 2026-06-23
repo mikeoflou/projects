@@ -42,6 +42,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             sidebar.style.width = "0";
         }
     });
+    document.querySelector('button').addEventListener('click', function() {
+    alert('Button clicked! The code is connected.');
+});
 
     let events = [];
     try {
