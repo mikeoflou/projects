@@ -1,8 +1,5 @@
 const mySupabase = supabase.createClient(
-    'https://saufbyduwfoipmcztzde.supabase.co', 
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhdWZieWR1d2ZvaXBtY3p0emRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5NjM1MDgsImV4cCI6MjA5NzUzOTUwOH0.4pPYL-bCvKgpkQXPfqakUJjqo3LUeieHXCS1tBPET3s'
-);
-
+https://supabase.com/dashboard/project/hmzvjojgqaoeyenvvsor/functions
 document.addEventListener('DOMContentLoaded', async function() {
     // --- Elements ---
     const modal = document.getElementById('eventModal');
