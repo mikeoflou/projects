@@ -1,5 +1,8 @@
 const mySupabase = supabase.createClient(
-https://supabase.com/dashboard/project/hmzvjojgqaoeyenvvsor/functions
+  "https://hmzvjojgqaoeyenvvsor.supabase.co",
+  "sb_publishable_-b3XpSFtUWN4nu_O75USFw_z2wVpRKg"
+);
+
 document.addEventListener('DOMContentLoaded', async function() {
     // --- Elements ---
     const modal = document.getElementById('eventModal');
