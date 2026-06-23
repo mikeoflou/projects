@@ -16,27 +16,28 @@ document.addEventListener('DOMContentLoaded', async function() {
     const API_KEY = 'd1e6fb784b1050cf34f0c8f0b552db49';
     const CITY = 'Jeffersonville';
 
-    // --- Time and Weather ---
+    // --- Clock ---
     setInterval(() => {
-        dateTimeEl.textContent = new Date().toLocaleString();
+        if (dateTimeEl) dateTimeEl.textContent = new Date().toLocaleString();
     }, 1000);
 
+    // --- Weather ---
     async function fetchWeather() {
         try {
             const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=imperial&appid=${API_KEY}`);
             if (!response.ok) throw new Error('Weather fetch failed');
             const data = await response.json();
-            weatherEl.textContent = `${Math.round(data.main.temp)}°F, ${data.weather[0].main}`;
+            if (weatherEl) weatherEl.textContent = `${Math.round(data.main.temp)}°F, ${data.weather[0].main}`;
         } catch (error) {
             console.error("Weather failed:", error);
-            weatherEl.textContent = "Weather unavailable";
+            if (weatherEl) weatherEl.textContent = "Weather unavailable";
         }
     }
     fetchWeather();
     setInterval(fetchWeather, 600000);
 
     // --- Sidebar and Nav ---
-    document.getElementById('toggleNav').addEventListener('click', (e) => {
+    document.getElementById('toggleNav')?.addEventListener('click', (e) => {
         e.stopPropagation();
         sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
     });
@@ -52,14 +53,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         let { data } = await mySupabase.from('events').select('*');
         if (data) events = data;
-    } catch (err) {
-        console.error("Error loading Supabase events:", err);
-    }
+    } catch (err) { console.error("Error loading events:", err); }
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         selectable: true,
-        displayEventTime: false,
         events: events.map(e => ({
             id: e.id, 
             title: (e.time ? e.time.substring(0, 5) + " " : "") + (e.title || ""),
@@ -69,35 +67,28 @@ document.addEventListener('DOMContentLoaded', async function() {
         dateClick: (info) => {
             window.selectedEventId = null;
             window.selectedDate = info.dateStr;
-            document.getElementById('eventTitle').value = '';
-            document.getElementById('eventDesc').value = '';
-            document.getElementById('eventTime').value = '';
             modal.style.display = 'block';
         },
         eventClick: (info) => {
             window.selectedEventId = info.event.id;
             document.getElementById('eventTitle').value = info.event.title.replace(/^\d{2}:\d{2}\s/, '');
             document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
-            if (info.event.extendedProps.time) {
-                document.getElementById('eventTime').value = info.event.extendedProps.time.substring(0, 5);
-            }
             modal.style.display = 'block';
         }
     });
     calendar.render();
 
-    document.getElementById('calendarToggle').addEventListener('click', (e) => {
+    document.getElementById('calendarToggle')?.addEventListener('click', (e) => {
         e.stopPropagation();
         calCont.classList.toggle('hidden');
         if (!calCont.classList.contains('hidden')) calendar.updateSize();
     });
 
-    // --- Unified Gemini Search Listener ---
-    document.getElementById('geminiSearchForm').addEventListener('submit', async function(e) {
+    // --- Search Handler ---
+    document.getElementById('geminiSearchForm')?.addEventListener('submit', async function(e) {
         e.preventDefault(); 
         const queryText = document.getElementById('searchQuery').value;
         outputField.value = "Searching Gemini for: " + queryText + "...";
-
         try {
             const response = await fetch('YOUR_ACTUAL_WORKER_URL', {
                 method: 'POST',
@@ -106,22 +97,18 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
             const data = await response.json();
             outputField.value = data.answer; 
-        } catch (error) {
-            outputField.value = "Sorry, I couldn't connect to the AI. Please check your API configuration.";
-        }
+        } catch (error) { outputField.value = "Error connecting to AI."; }
     });
 
     // --- Modal Controls ---
     window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
-    document.getElementById('saveBtn').addEventListener('click', async () => {
+    document.getElementById('saveBtn')?.addEventListener('click', async () => {
         const payload = {
             title: document.getElementById('eventTitle').value,
             Description: document.getElementById('eventDesc').value,
-            time: document.getElementById('eventTime').value ? document.getElementById('eventTime').value + ":00" : null,
-            am_pm: document.getElementById('eventAmPm').checked
+            time: document.getElementById('eventTime').value ? document.getElementById('eventTime').value + ":00" : null
         };
-
         if (window.selectedEventId) {
             await mySupabase.from('events').update(payload).eq('id', window.selectedEventId);
         } else {
@@ -130,15 +117,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         location.reload();
     });
 
-    document.getElementById('deleteBtn').addEventListener('click', async () => {
+    document.getElementById('deleteBtn')?.addEventListener('click', async () => {
         if (window.selectedEventId) {
             await mySupabase.from('events').delete().eq('id', window.selectedEventId);
             location.reload();
         }
     });
 });
-
-// --- HELPER FUNCTIONS (Outside the DOMContentLoaded block) ---
-function displayAIResponse(response) {
-    document.getElementById('ai-output').value = response;
-}
