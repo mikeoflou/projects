@@ -120,3 +120,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 });
+// Function to display the output
+function displayAIResponse(response) {
+    const outputField = document.getElementById('ai-output');
+    outputField.value = response; // This puts the text into the box
+}
+function appendToOutput(textChunk) {
+    const outputField = document.getElementById('ai-output');
+    outputField.value += textChunk; // Appends the new piece of text
+    
+    // Optional: Auto-scroll to the bottom
+    outputField.scrollTop = outputField.scrollHeight;
+}
+document.getElementById('ai-output').value = '';
