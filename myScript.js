@@ -174,11 +174,11 @@ export default {
     const { prompt } = await request.json();
 
     // 2. Call the Gemini API
-    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_ACTUAL_GEMINI_API_KEY", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-    });
+  const response = await fetch('/api/gemini', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: queryText })
+});
 
     const data = await response.json();
     const answer = data.candidates[0].content.parts[0].text;
@@ -189,3 +189,4 @@ export default {
     });
   }
 };
+
