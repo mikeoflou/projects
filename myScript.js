@@ -164,3 +164,28 @@ function appendToOutput(textChunk) {
     outputField.value += textChunk;
     outputField.scrollTop = outputField.scrollHeight;
 }
+export default {
+  async fetch(request, env) {
+    // 1. Handle CORS preflight (this stops the "interference" issues)
+    if (request.method === "OPTIONS") {
+      return new Response(null, { headers: { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST", "Access-Control-Allow-Headers": "Content-Type" }});
+    }
+
+    const { prompt } = await request.json();
+
+    // 2. Call the Gemini API
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=YOUR_ACTUAL_GEMINI_API_KEY", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+
+    const data = await response.json();
+    const answer = data.candidates[0].content.parts[0].text;
+
+    // 3. Return the answer with CORS headers
+    return new Response(JSON.stringify({ answer }), {
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+    });
+  }
+};
