@@ -13,132 +13,34 @@ document.addEventListener('DOMContentLoaded', async function() {
     const weatherEl = document.getElementById('weather');
     const outputField = document.getElementById('ai-output');
     
-    const API_KEY = 'd1e6fb784b1050cf34f0c8f0b552db49';
-    const CITY = 'Jeffersonville';
-
-    // --- Time and Weather ---
-    setInterval(() => {
-        dateTimeEl.textContent = new Date().toLocaleString();
-    }, 1000);
-
-    async function fetchWeather() {
-        try {
-            const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=imperial&appid=${API_KEY}`);
-            if (!response.ok) throw new Error('Weather fetch failed');
-            const data = await response.json();
-            weatherEl.textContent = `${Math.round(data.main.temp)}°F, ${data.weather[0].main}`;
-        } catch (error) {
-            console.error("Weather failed:", error);
-            weatherEl.textContent = "Weather unavailable";
-        }
-    }
-    fetchWeather();
-    setInterval(fetchWeather, 600000);
-
-    // --- Sidebar and Nav ---
-    document.getElementById('toggleNav').addEventListener('click', (e) => {
-        e.stopPropagation();
-        sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
-    });
-
-    document.addEventListener('click', (e) => {
-        if (sidebar && sidebar.style.width === "250px" && !sidebar.contains(e.target) && e.target.id !== 'toggleNav') {
-            sidebar.style.width = "0";
-        }
-    });
-
-    // --- Calendar Logic ---
-    let events = [];
-    try {
-        let { data } = await mySupabase.from('events').select('*');
-        if (data) events = data;
-    } catch (err) {
-        console.error("Error loading Supabase events:", err);
-    }
-
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        selectable: true,
-        displayEventTime: false,
-        events: events.map(e => ({
-            id: e.id, 
-            title: (e.time ? e.time.substring(0, 5) + " " : "") + (e.title || ""),
-            start: e.start_date,
-            extendedProps: { description: e.Description, time: e.time }
-        })),
-        dateClick: (info) => {
-            window.selectedEventId = null;
-            window.selectedDate = info.dateStr;
-            document.getElementById('eventTitle').value = '';
-            document.getElementById('eventDesc').value = '';
-            document.getElementById('eventTime').value = '';
-            modal.style.display = 'block';
-        },
-        eventClick: (info) => {
-            window.selectedEventId = info.event.id;
-            document.getElementById('eventTitle').value = info.event.title.replace(/^\d{2}:\d{2}\s/, '');
-            document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
-            if (info.event.extendedProps.time) {
-                document.getElementById('eventTime').value = info.event.extendedProps.time.substring(0, 5);
-            }
-            modal.style.display = 'block';
-        }
-    });
-    calendar.render();
-
-    document.getElementById('calendarToggle').addEventListener('click', (e) => {
-        e.stopPropagation();
-        calCont.classList.toggle('hidden');
-        if (!calCont.classList.contains('hidden')) calendar.updateSize();
-    });
+    // ... (Keep your existing interval, weather, sidebar, and calendar logic here) ...
 
     // --- Unified Gemini Search Listener ---
-    document.getElementById('geminiSearchForm').addEventListener('submit', async function(e) {
-        e.preventDefault(); 
-        const queryText = document.getElementById('searchQuery').value;
-        outputField.value = "Searching Gemini for: " + queryText + "...";
+    const searchForm = document.getElementById('geminiSearchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); 
+            const queryText = document.getElementById('searchQuery').value;
+            outputField.value = "Searching Gemini for: " + queryText + "...";
 
-        try {
-            const response = await fetch('YOUR_ACTUAL_WORKER_URL', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: queryText })
-            });
-            const data = await response.json();
-            outputField.value = data.answer; 
-        } catch (error) {
-            outputField.value = "Sorry, I couldn't connect to the AI. Please check your API configuration.";
-        }
-    });
+            try {
+                const response = await fetch('YOUR_ACTUAL_WORKER_URL', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: queryText })
+                });
+                const data = await response.json();
+                outputField.value = data.answer; 
+            } catch (error) {
+                outputField.value = "Sorry, I couldn't connect to the AI.";
+            }
+        });
+    }
 
     // --- Modal Controls ---
     window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
-    document.getElementById('saveBtn').addEventListener('click', async () => {
-        const payload = {
-            title: document.getElementById('eventTitle').value,
-            Description: document.getElementById('eventDesc').value,
-            time: document.getElementById('eventTime').value ? document.getElementById('eventTime').value + ":00" : null,
-            am_pm: document.getElementById('eventAmPm').checked
-        };
-
-        if (window.selectedEventId) {
-            await mySupabase.from('events').update(payload).eq('id', window.selectedEventId);
-        } else {
-            await mySupabase.from('events').insert([{ ...payload, start_date: window.selectedDate }]);
-        }
-        location.reload();
-    });
-
-    document.getElementById('deleteBtn').addEventListener('click', async () => {
-        if (window.selectedEventId) {
-            await mySupabase.from('events').delete().eq('id', window.selectedEventId);
-            location.reload();
-        }
-    });
-});
-
-// --- HELPER FUNCTIONS (Outside the DOMContentLoaded block) ---
-function displayAIResponse(response) {
-    document.getElementById('ai-output').value = response;
-}
+    // --- Save/Delete Buttons ---
+    // (Ensure these are inside the DOMContentLoaded block)
+}); 
+// <--- THERE SHOULD ONLY BE ONE CLOSING BRACE HERE FOR THE DOMContentLoaded FUNCTION
