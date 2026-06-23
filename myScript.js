@@ -1,6 +1,6 @@
 const mySupabase = supabase.createClient(
     'https://saufbyduwfoipmcztzde.supabase.co', 
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhdWZieWR1d2ZvaXBtY3p0emRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5NjM1MDgsImV4cCI6MjA5NzUzOTUwOH0.4pPYL-bCvKgpkQXPfqakUJjqo3LUeieHXCS1tBPET3s' // Paste the key you just copied here
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhdWZieWR1d2ZvaXBtY3p0emRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5NjM1MDgsImV4cCI6MjA5NzUzOTUwOH0.4pPYL-bCvKgpkQXPfqakUJjqo3LUeieHXCS1tBPET3s'
 );
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -42,9 +42,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             sidebar.style.width = "0";
         }
     });
-    document.querySelector('button').addEventListener('click', function() {
-    alert('Button clicked! The code is connected.');
-});
 
     let events = [];
     try {
@@ -95,7 +92,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('geminiSearchForm').addEventListener('submit', function(e) {
         e.preventDefault(); 
         const queryText = document.getElementById('searchQuery').value;
-        alert("Searching Gemini for: " + queryText);
+        const outputField = document.getElementById('ai-output');
+        outputField.value = "Searching Gemini for: " + queryText + "...";
     });
 
     window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
@@ -123,17 +121,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 });
-// Assuming your search button has id="search-btn"
-document.getElementById('search-btn').addEventListener('click', () => {
+
+// Function to display the output
+function displayAIResponse(response) {
     const outputField = document.getElementById('ai-output');
-    const query = document.querySelector('input[type="text"]').value; // Adjust selector as needed
+    outputField.value = response;
+}
 
-    // 1. Clear the box only when a new search starts
-    outputField.value = '';
-
-    // 2. Show the status message
-    outputField.value = "Searching Gemini for: " + query + "...";
-
-    // 3. Trigger your AI search logic here
-    // performSearch(query); 
-});
+function appendToOutput(textChunk) {
+    const outputField = document.getElementById('ai-output');
+    outputField.value += textChunk;
+    outputField.scrollTop = outputField.scrollHeight;
+}
