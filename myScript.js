@@ -123,18 +123,17 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // Function to display the output
-
-document.getElementById('geminiSearchForm').addEventListener('submit', async function(e) {
+// --- SEARCH FORM LISTENER ---
+    document.getElementById('geminiSearchForm').addEventListener('submit', async function(e) {
         e.preventDefault(); 
         const queryText = document.getElementById('searchQuery').value;
         const outputField = document.getElementById('ai-output');
         
-        // 1. Show that we are working
+        // 1. Show working state
         outputField.value = "Searching Gemini for: " + queryText + "...";
 
         try {
-            // 2. This is the part that does the actual work
-            // You need to replace 'YOUR_API_ENDPOINT' with your actual backend URL
+            // 2. Perform actual fetch (Ensure YOUR_API_ENDPOINT is replaced with your real URL)
             const response = await fetch('YOUR_API_ENDPOINT', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -142,13 +141,20 @@ document.getElementById('geminiSearchForm').addEventListener('submit', async fun
             });
 
             const data = await response.json();
-
             // 3. Update the box with the real result
             outputField.value = data.answer; 
         } catch (error) {
             outputField.value = "Sorry, I couldn't connect to the AI. Please check your API configuration.";
         }
-    function displayAIResponse(response) {
+    });
+
+    window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
+
+    // ... (rest of your saveBtn and deleteBtn code)
+}); // This closes the DOMContentLoaded block
+
+// --- HELPER FUNCTIONS (Outside the DOMContentLoaded block) ---
+function displayAIResponse(response) {
     const outputField = document.getElementById('ai-output');
     outputField.value = response;
 }
@@ -158,4 +164,3 @@ function appendToOutput(textChunk) {
     outputField.value += textChunk;
     outputField.scrollTop = outputField.scrollHeight;
 }
-    });
