@@ -85,7 +85,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     // --- To-Do List Logic (NEW) ---
-    document.getElementById('todoToggle')?.addEventListener('click', () => {
+   // --- To-Do List Logic (Improved) ---
+const todoBtn = document.getElementById('todoToggle');
+if (todoBtn) {
+    todoBtn.addEventListener('click', () => {
         const taskType = prompt("Enter type (Medicine or Store):");
         const taskDetails = prompt("Enter the item name or note:");
         
@@ -93,6 +96,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             saveTask(taskType, taskDetails);
         }
     });
+}
 
     async function saveTask(type, details) {
         const today = new Date().toISOString().split('T')[0];
@@ -111,21 +115,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 
-    // --- Search Handler ---
-    document.getElementById('geminiSearchForm')?.addEventListener('submit', async function(e) {
-        e.preventDefault(); 
-        const queryText = document.getElementById('searchQuery').value;
-        outputField.value = "Searching Gemini for: " + queryText + "...";
-        try {
-            const response = await fetch('YOUR_ACTUAL_WORKER_URL', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: queryText })
-            });
-            const data = await response.json();
-            outputField.value = data.answer; 
-        } catch (error) { outputField.value = "Error connecting to AI."; }
-    });
+  
 
     // --- Modal Controls ---
     window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
