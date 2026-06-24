@@ -146,6 +146,25 @@ if (todoBtn) {
         }
     });
 });
+async function showWeeklyPlanner() {
+    const { data, error } = await mySupabase
+        .from('events')
+        .select('start_date, medicine_task, grocery_task')
+        .order('start_date', { ascending: false })
+        .limit(7);
+
+    if (data) {
+        const tbody = document.getElementById('weeklyBody');
+        tbody.innerHTML = data.map(row => `
+            <tr>
+                <td>${row.start_date}</td>
+                <td>${row.medicine_task || '-'}</td>
+                <td>${row.grocery_task || '-'}</td>
+            </tr>
+        `).join('');
+        document.getElementById('weeklyPlannerModal').style.display = 'block';
+    }
+}
 
 
 
