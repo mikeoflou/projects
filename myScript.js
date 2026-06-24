@@ -84,11 +84,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!calCont.classList.contains('hidden')) calendar.updateSize();
     });
 
-    // --- To-Do List Logic (NEW) ---
-   // --- To-Do List Logic (Improved) ---
+  // Add this inside your DOMContentLoaded function
 const todoBtn = document.getElementById('todoToggle');
+
 if (todoBtn) {
-    todoBtn.addEventListener('click', () => {
+    todoBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevents the sidebar/menu logic from interfering
         const taskType = prompt("Enter type (Medicine or Store):");
         const taskDetails = prompt("Enter the item name or note:");
         
@@ -96,6 +97,8 @@ if (todoBtn) {
             saveTask(taskType, taskDetails);
         }
     });
+} else {
+    console.error("To-Do button not found in the DOM!");
 }
 
     async function saveTask(type, details) {
