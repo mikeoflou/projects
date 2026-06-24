@@ -84,6 +84,33 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!calCont.classList.contains('hidden')) calendar.updateSize();
     });
 
+    // --- To-Do List Logic (NEW) ---
+    document.getElementById('todoToggle')?.addEventListener('click', () => {
+        const taskType = prompt("Enter type (Medicine or Store):");
+        const taskDetails = prompt("Enter the item name or note:");
+        
+        if (taskType && taskDetails) {
+            saveTask(taskType, taskDetails);
+        }
+    });
+
+    async function saveTask(type, details) {
+        const today = new Date().toISOString().split('T')[0];
+        const { error } = await mySupabase.from('events').insert([{
+            title: `[${type}] ${details}`,
+            start_date: today,
+            Description: 'Daily Task'
+        }]);
+
+        if (error) {
+            console.error("Error saving task:", error);
+            alert("Failed to save task.");
+        } else {
+            alert("Task added to your calendar!");
+            location.reload();
+        }
+    }
+
     // --- Search Handler ---
     document.getElementById('geminiSearchForm')?.addEventListener('submit', async function(e) {
         e.preventDefault(); 
