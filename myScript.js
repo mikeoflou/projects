@@ -101,23 +101,25 @@ if (todoBtn) {
     console.error("To-Do button not found in the DOM!");
 }
 
-    async function saveTask(type, details) {
-        const today = new Date().toISOString().split('T')[0];
-        const { error } = await mySupabase.from('events').insert([{
-            title: `[${type}] ${details}`,
+   async function saveTask(type, details) {
+    const today = new Date().toISOString().split('T')[0];
+    const updatePayload = (type === 'Medicine') 
+        ? { medicine_task: details } 
+        : { grocery_task: details };
+
+    const { error } = await mySupabase
+        .from('events')
+        .insert([{
             start_date: today,
-            Description: 'Daily Task'
+            ...updatePayload
         }]);
 
-        if (error) {
-            console.error("Error saving task:", error);
-            alert("Failed to save task.");
-        } else {
-            alert("Task added to your calendar!");
-            location.reload();
-        }
+    if (error) console.error("Error saving task:", error);
+    else {
+        alert("Task saved!");
+        location.reload();
     }
-
+}
   
 
     // --- Modal Controls ---
