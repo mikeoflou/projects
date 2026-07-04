@@ -40,6 +40,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         window.location.href = searchUrl.toString();
     });
 
+    const todoBtn = document.getElementById('todoToggle');
+    todoBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const taskType = prompt("Enter type (Medicine or Store):");
+        const taskDetails = prompt("Enter the item name or note:");
+
+        if (taskType && taskDetails) {
+            saveTask(taskType, taskDetails);
+        }
+    });
+
     // --- Clock ---
     setInterval(() => {
         if (dateTimeEl) dateTimeEl.textContent = new Date().toLocaleString();
@@ -112,21 +123,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.stopPropagation();
         showWeeklyPlanner();
     });
-
-  // Add this inside your DOMContentLoaded function
-const todoBtn = document.getElementById('todoToggle');
-
-if (todoBtn) {
-    todoBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const taskType = prompt("Enter type (Medicine or Store):");
-        const taskDetails = prompt("Enter the item name or note:");
-
-        if (taskType && taskDetails) {
-            saveTask(taskType, taskDetails);
-        }
-    });
-}
 
    async function saveTask(type, details) {
     const today = new Date().toISOString().split('T')[0];
