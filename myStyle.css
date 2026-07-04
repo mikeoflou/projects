@@ -1,163 +1,249 @@
-   body { background-color: lightgreen; font-size: 14px; font-weight: bold; margin: 0; font-family: sans-serif; }
-        
-        #sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #111; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
-        #sidebar a { padding: 15px 32px; text-decoration: none; font-size: 25px; color: lightgreen; display: block; }
-        
-        .hidden { display: none !important; }
-        
-        #calendarContainer {
-            position: absolute;
-            top: 60px;
-            left: 10px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            z-index: 900;
-        }
-        #calendar { height: 500px; width: 800px; background: beige !important; }
+/* --- Core Interface Reset --- */
+body { 
+    background-color: lightgreen; 
+    font-size: 14px; 
+    font-weight: bold; 
+    margin: 0; 
+    font-family: sans-serif; 
+}
 
-        #headerBar { display: flex; align-items: center; gap: 10px; padding: 10px; background-color: rgba(0,0,0,0.05); }
-        #calendarToggle, #toggleNav, #todoToggle, #plannerToggle, #aiSearchButton { font-size: 18px; cursor: pointer; padding: 7px 12px; z-index: 1001; }
+/* --- Navigation Header Bar --- */
+#headerBar { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    padding: 10px; 
+    background-color: rgba(0,0,0,0.05); 
+    flex-wrap: wrap;
+}
 
-        .fc .fc-toolbar-title { color: #000000 !important; }
-        .fc .fc-button-primary { background-color: #006400 !important; border-color: #006400 !important; }
-        
-        .fc-theme-standard .fc-day-today { background-color: lightgreen !important; }
+#calendarToggle, #toggleNav, #todoToggle, #medicineToggle, #aiSearchButton { 
+    font-size: 18px; 
+    cursor: pointer; 
+    padding: 7px 12px; 
+}
 
-        /* --- GOOGLE STYLE SHORTCUTS GRID --- */
-        #main-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            margin-top: 120px; /* Shifts the tiles safely down beneath the top header row */
-            position: relative;
-            z-index: 10;
-        }
+/* --- Slide-Out Overlay Sidebar Layout --- */
+#sidebar { 
+    height: 100%; 
+    width: 0; 
+    position: fixed; 
+    z-index: 4000; /* Re-indexed to cleanly slide above all header tiles and modals */
+    top: 0; 
+    left: 0; 
+    background-color: #111; 
+    overflow-x: hidden; 
+    transition: 0.5s; 
+    padding-top: 60px; 
+}
 
-        .shortcuts-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px 32px;
-            max-width: 800px;
-            justify-content: center;
-            padding: 20px;
-            margin: 0 auto;
-        }
+#sidebar a { 
+    padding: 15px 32px; 
+    text-decoration: none; 
+    font-size: 25px; 
+    color: lightgreen; 
+    display: block; 
+}
 
-        .shortcut-tile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 112px;
-            padding: 12px 0;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background-color 0.15s, transform 0.1s;
-            cursor: pointer;
-        }
+/* --- Universal Utility Wrappers --- */
+.hidden { 
+    display: none !important; 
+}
 
-        .shortcut-tile:hover {
-            background-color: rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px);
-        }
+.sr-only { 
+    position: absolute; 
+    width: 1px; 
+    height: 1px; 
+    padding: 0; 
+    margin: -1px; 
+    overflow: hidden; 
+    clip: rect(0, 0, 0, 0); 
+    white-space: nowrap; 
+    border: 0; 
+}
 
-        .tile-icon {
-            width: 48px;
-            height: 48px;
-            background-color: #f1f3f4;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-        }
+/* --- Fluid Responsive Calendar Viewport --- */
+#calendarContainer { 
+    position: absolute; 
+    top: 70px; 
+    left: 50%;
+    transform: translateX(-50%);
+    background: white; 
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 12px 36px rgba(0,0,0,0.25); 
+    z-index: 2000; 
+    width: min(94vw, 840px); /* Dynamically scales fluidly across desktop and mobile screens */
+    box-sizing: border-box;
+}
 
-        .tile-icon img {
-            width: 28px;
-            height: 28px;
-            object-fit: contain;
-        }
+#calendar { 
+    max-height: 70vh;
+    background: beige !important; 
+}
 
-        .tile-label {
-            font-size: 13px;
-            color: #202124;
-            text-align: center;
-            width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+/* --- FullCalendar Style Overrides --- */
+.fc .fc-toolbar-title { 
+    color: #000000 !important; 
+}
 
+.fc .fc-button-primary { 
+    background-color: #006400 !important; 
+    border-color: #006400 !important; 
+}
 
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
+.fc-theme-standard .fc-day-today { 
+    background-color: lightgreen !important; 
+}
 
-        #headerBar {
-            flex-wrap: wrap;
-        }
+/* --- Modular Form & Weekly Planner Layout Matrix --- */
+#weeklyPlannerModal {
+    background: white;
+    color: #222;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.22);
+}
 
-        .ai-search-form {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1 1 360px;
-            max-width: 680px;
-            min-width: 260px;
-        }
+#weeklyPlannerModal table th {
+    background-color: #006400;
+    color: white;
+}
 
-        #aiSearchInput {
-            flex: 1 1 auto;
-            min-width: 180px;
-            padding: 9px 12px;
-            border: 1px solid rgba(0,0,0,0.25);
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: normal;
-        }
+#weeklyPlannerModal table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
 
-        #aiSearchButton {
-            background: #006400;
-            border: 1px solid #006400;
-            border-radius: 8px;
-            color: white;
-            white-space: nowrap;
-        }
+#plannerClose, #medicineClose {
+    background: #555;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
 
-        #ai-output {
-            flex-basis: 100%;
-            min-height: 16px;
-            color: #064e3b;
-            font-size: 12px;
-            font-weight: normal;
-        }
+#plannerClose:hover, #medicineClose:hover {
+    background: #222;
+}
 
-        @media (max-width: 720px) {
-            #headerBar {
-                align-items: stretch;
-            }
+/* --- Shortcut Grid Layout Block --- */
+#main-content { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    width: 100%; 
+    margin-top: 100px; 
+    position: relative; 
+    z-index: 10; 
+}
 
-            .ai-search-form {
-                flex-basis: 100%;
-                max-width: none;
-            }
+.shortcuts-grid { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 24px 32px; 
+    max-width: 800px; 
+    justify-content: center; 
+    padding: 20px; 
+    margin: 0 auto; 
+}
 
-            #aiSearchInput {
-                min-width: 0;
-            }
+.shortcut-tile { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    width: 112px; 
+    padding: 12px 0; 
+    text-decoration: none; 
+    border-radius: 8px; 
+    transition: background-color 0.15s, transform 0.1s; 
+    cursor: pointer; 
+}
 
-            #main-content {
-                margin-top: 160px;
-            }
-        }
+.shortcut-tile:hover { 
+    background-color: rgba(0, 0, 0, 0.08); 
+    transform: translateY(-2px); 
+}
+
+.tile-icon { 
+    width: 48px; 
+    height: 48px; 
+    background-color: #f1f3f4; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    margin-bottom: 8px; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15); 
+}
+
+.tile-icon img { 
+    width: 28px; 
+    height: 28px; 
+    object-fit: contain; 
+}
+
+.tile-label { 
+    font-size: 13px; 
+    color: #202124; 
+    text-align: center; 
+    width: 100%; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+}
+
+/* --- AI Search Component Block --- */
+.ai-search-form { 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    flex: 1 1 360px; 
+    max-width: 680px; 
+    min-width: 260px; 
+}
+
+#aiSearchInput { 
+    flex: 1 1 auto; 
+    min-width: 180px; 
+    padding: 9px 12px; 
+    border: 1px solid rgba(0,0,0,0.25); 
+    border-radius: 8px; 
+    font-size: 16px; 
+    font-weight: normal; 
+}
+
+#aiSearchButton { 
+    background: #006400; 
+    border: 1px solid #006400; 
+    border-radius: 8px; 
+    color: white; 
+    white-space: nowrap; 
+}
+
+#ai-output { 
+    flex-basis: 100%; 
+    min-height: 16px; 
+    color: #064e3b; 
+    font-size: 14px; 
+    font-weight: normal; 
+}
+
+/* --- Screen Constraint Adjustments --- */
+@media (max-width: 720px) { 
+    #headerBar { 
+        align-items: stretch; 
+    } 
+    .ai-search-form { 
+        flex-basis: 100%; 
+        max-width: none; 
+    } 
+    #aiSearchInput { 
+        min-width: 0; 
+    } 
+    #main-content { 
+        margin-top: 160px; 
+    } 
+}
