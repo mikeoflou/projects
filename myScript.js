@@ -125,7 +125,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     document.getElementById('medicineClose')?.addEventListener('click', closeMedicineTracker);
-    document.getElementById('medicineTrackerBody')?.addEventListener('change', updateMedicineTracker);
+    const medicineTrackerBody = document.getElementById('medicineTrackerBody');
+    if (medicineTrackerBody && !medicineTrackerBody.dataset.tableTrackerBound) {
+        medicineTrackerBody.dataset.tableTrackerBound = 'true';
+        medicineTrackerBody.addEventListener('change', updateMedicineTracker);
+    }
+    window.__medicineTableTrackerScript = true;
 
    async function saveTask(type, details) {
     const today = new Date().toISOString().split('T')[0];
