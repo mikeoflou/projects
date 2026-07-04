@@ -124,9 +124,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         showMedicineTracker();
     });
 
-    document.getElementById('medicineForm')?.addEventListener('submit', addMedicineItem);
     document.getElementById('medicineClose')?.addEventListener('click', closeMedicineTracker);
-    document.getElementById('medicineList')?.addEventListener('click', updateMedicineItem);
+    document.getElementById('medicineTrackerBody')?.addEventListener('change', updateMedicineTracker);
 
    async function saveTask(type, details) {
     const today = new Date().toISOString().split('T')[0];
@@ -174,64 +173,98 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 });
-function getMedicineItems() {
+function toDateKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return year + '-' + month + '-' + day;
+}
+
+function fromDateKey(dateKey) {
+    const parts = dateKey.split('-').map(Number);
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function addDays(dateKey, days) {
+    const date = fromDateKey(dateKey);
+    date.setDate(date.getDate() + days);
+    return toDateKey(date);
+}
+
+function formatMedicineDate(dateKey) {
+    const date = fromDateKey(dateKey);
+    return date.toLocaleDateString(undefined, {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+}
+
+function defaultMedicineTrackerState() {
+    const currentDate = toDateKey(new Date());
+    return {
+        current: { date: currentDate, morning: false, evening: false },
+        previous: { date: addDays(currentDate, -1), morning: false, evening: false }
+    };
+}
+
+function normalizeMedicineTrackerState(state) {
+    const fallback = defaultMedicineTrackerState();
+    if (!state || !state.current || !state.current.date) return fallback;
+
+    return {
+        current: {
+            date: state.current.date,
+            morning: Boolean(state.current.morning),
+            evening: Boolean(state.current.evening)
+        },
+        previous: {
+            date: state.previous?.date || addDays(state.current.date, -1),
+            morning: Boolean(state.previous?.morning),
+            evening: Boolean(state.previous?.evening)
+        }
+    };
+}
+
+function getMedicineTrackerState() {
     try {
-        const stored = JSON.parse(localStorage.getItem('medicineTrackerV1') || '[]');
-        return Array.isArray(stored) ? stored : [];
+        return normalizeMedicineTrackerState(JSON.parse(localStorage.getItem('medicineTrackerTableV1') || 'null'));
     } catch (error) {
-        return [];
+        return defaultMedicineTrackerState();
     }
 }
 
-function saveMedicineItems(items) {
-    localStorage.setItem('medicineTrackerV1', JSON.stringify(items));
+function saveMedicineTrackerState(state) {
+    localStorage.setItem('medicineTrackerTableV1', JSON.stringify(normalizeMedicineTrackerState(state)));
 }
 
 function renderMedicineTracker() {
-    const list = document.getElementById('medicineList');
-    if (!list) return;
+    const body = document.getElementById('medicineTrackerBody');
+    if (!body) return;
 
-    const items = getMedicineItems();
-    list.innerHTML = '';
+    const state = getMedicineTrackerState();
+    const rows = [
+        { key: 'current', label: 'Current', data: state.current },
+        { key: 'previous', label: 'Previous', data: state.previous }
+    ];
 
-    if (!items.length) {
-        const emptyMessage = document.createElement('p');
-        emptyMessage.textContent = 'No medicines added yet.';
-        list.appendChild(emptyMessage);
-        return;
-    }
-
-    items.forEach((item) => {
-        const card = document.createElement('div');
-        card.style.cssText = 'border:1px solid #ddd; border-radius:8px; padding:10px; margin-top:10px; background:#fafafa;';
-
-        const title = document.createElement('strong');
-        title.textContent = item.name;
-        card.appendChild(title);
-
-        const dose = document.createElement('div');
-        dose.textContent = (item.dose || 'No dose') + ' - ' + (item.time || 'No time set');
-        card.appendChild(dose);
-
-        const lastTaken = document.createElement('div');
-        lastTaken.textContent = 'Last taken: ' + (item.lastTaken || 'Not marked yet');
-        card.appendChild(lastTaken);
-
-        const takenButton = document.createElement('button');
-        takenButton.type = 'button';
-        takenButton.dataset.medTaken = item.id;
-        takenButton.textContent = 'Taken';
-        takenButton.style.marginRight = '8px';
-        card.appendChild(takenButton);
-
-        const deleteButton = document.createElement('button');
-        deleteButton.type = 'button';
-        deleteButton.dataset.medDelete = item.id;
-        deleteButton.textContent = 'Delete';
-        card.appendChild(deleteButton);
-
-        list.appendChild(card);
-    });
+    body.innerHTML = rows.map((row) => {
+        const morningChecked = row.data.morning ? ' checked' : '';
+        const eveningChecked = row.data.evening ? ' checked' : '';
+        return '<tr data-med-row="' + row.key + '">' +
+            '<td style="border-bottom:1px solid #eee; padding:10px; text-align:left;">' +
+                '<strong>' + row.label + '</strong><br>' +
+                '<span>' + formatMedicineDate(row.data.date) + '</span>' +
+            '</td>' +
+            '<td style="border-bottom:1px solid #eee; padding:10px;">' +
+                '<input type="checkbox" data-dose="morning"' + morningChecked + ' aria-label="' + row.label + ' morning medicine">' +
+            '</td>' +
+            '<td style="border-bottom:1px solid #eee; padding:10px;">' +
+                '<input type="checkbox" data-dose="evening"' + eveningChecked + ' aria-label="' + row.label + ' evening medicine">' +
+            '</td>' +
+        '</tr>';
+    }).join('');
 }
 
 function showMedicineTracker() {
@@ -245,47 +278,32 @@ function closeMedicineTracker() {
     if (modal) modal.style.display = 'none';
 }
 
-function addMedicineItem(event) {
-    event.preventDefault();
+function updateMedicineTracker(event) {
+    const checkbox = event.target.closest('input[type="checkbox"][data-dose]');
+    const row = event.target.closest('[data-med-row]');
+    if (!checkbox || !row) return;
 
-    const nameInput = document.getElementById('medicineName');
-    const doseInput = document.getElementById('medicineDose');
-    const timeInput = document.getElementById('medicineTime');
-    const name = nameInput?.value.trim();
+    const state = getMedicineTrackerState();
+    const rowKey = row.dataset.medRow;
+    const dose = checkbox.dataset.dose;
 
-    if (!name) return;
+    if (!state[rowKey]) return;
 
-    const items = getMedicineItems();
-    items.unshift({
-        id: Date.now().toString(36),
-        name,
-        dose: doseInput?.value.trim() || '',
-        time: timeInput?.value || '',
-        lastTaken: ''
-    });
+    state[rowKey][dose] = checkbox.checked;
 
-    saveMedicineItems(items);
-    event.target.reset();
-    renderMedicineTracker();
-}
-
-function updateMedicineItem(event) {
-    const takenButton = event.target.closest('[data-med-taken]');
-    const deleteButton = event.target.closest('[data-med-delete]');
-
-    if (!takenButton && !deleteButton) return;
-
-    let items = getMedicineItems();
-
-    if (takenButton) {
-        const item = items.find((medicine) => medicine.id === takenButton.dataset.medTaken);
-        if (item) item.lastTaken = new Date().toLocaleString();
+    if (rowKey === 'current' && dose === 'evening' && checkbox.checked) {
+        state.previous = {
+            date: state.current.date,
+            morning: Boolean(state.current.morning),
+            evening: true
+        };
+        state.current = {
+            date: addDays(state.previous.date, 1),
+            morning: false,
+            evening: false
+        };
     }
 
-    if (deleteButton) {
-        items = items.filter((medicine) => medicine.id !== deleteButton.dataset.medDelete);
-    }
-
-    saveMedicineItems(items);
+    saveMedicineTrackerState(state);
     renderMedicineTracker();
 }
