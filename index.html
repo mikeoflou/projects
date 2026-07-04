@@ -35,18 +35,18 @@
 <script>
 !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
 </script>
-<div id="medicineTrackerModal" style="display:none; position:fixed; top:8%; left:50%; transform:translateX(-50%); width:min(92%, 720px); max-height:84vh; overflow:auto; background:white; color:#222; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:2000; box-shadow:0 12px 30px rgba(0,0,0,.22);">
+<div id="medicineTrackerModal" style="display:none; position:fixed; top:8%; left:50%; transform:translateX(-50%); width:min(92%, 560px); max-height:84vh; overflow:auto; background:white; color:#222; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:2000; box-shadow:0 12px 30px rgba(0,0,0,.22);">
   <h3>Medicine Tracker</h3>
-  <form id="medicineForm" style="display:grid; gap:10px; margin-bottom:14px;">
-    <label for="medicineName">Medicine</label>
-    <input id="medicineName" type="text" autocomplete="off" required placeholder="Name">
-    <label for="medicineDose">Dose</label>
-    <input id="medicineDose" type="text" autocomplete="off" placeholder="Example: 1 pill">
-    <label for="medicineTime">Time</label>
-    <input id="medicineTime" type="time">
-    <button type="submit">Add Medicine</button>
-  </form>
-  <div id="medicineList" aria-live="polite"></div>
+  <table id="medicineTrackerTable" style="width:100%; border-collapse:collapse; margin-top:12px; text-align:center;">
+    <thead>
+      <tr>
+        <th style="border-bottom:1px solid #ddd; padding:8px; text-align:left;">Date</th>
+        <th style="border-bottom:1px solid #ddd; padding:8px;">Morning</th>
+        <th style="border-bottom:1px solid #ddd; padding:8px;">Evening</th>
+      </tr>
+    </thead>
+    <tbody id="medicineTrackerBody"></tbody>
+  </table>
   <button id="medicineClose" type="button" style="margin-top:14px;">Close</button>
 </div>
 <div id="sidebar">
@@ -127,7 +127,7 @@
           <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
       </div>
   </div>
-<script src="myScript.js?v=8"></script>
+<script src="myScript.js?v=9"></script>
 
 </body>
 </html>
