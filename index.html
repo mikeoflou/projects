@@ -127,7 +127,156 @@
           <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
       </div>
   </div>
-<script src="myScript.js?v=9"></script>
+<script src="myScript.js?v=10"></script>
+<script>
+(() => {
+    const storageKey = 'medicineTrackerTableV1';
+
+    function toDateKey(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    function fromDateKey(dateKey) {
+        const parts = dateKey.split('-').map(Number);
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function addDays(dateKey, days) {
+        const date = fromDateKey(dateKey);
+        date.setDate(date.getDate() + days);
+        return toDateKey(date);
+    }
+
+    function formatMedicineDate(dateKey) {
+        return fromDateKey(dateKey).toLocaleDateString(undefined, {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    }
+
+    function defaultState() {
+        const currentDate = toDateKey(new Date());
+        return {
+            current: { date: currentDate, morning: false, evening: false },
+            previous: { date: addDays(currentDate, -1), morning: false, evening: false }
+        };
+    }
+
+    function normalizeState(state) {
+        const fallback = defaultState();
+        if (!state || !state.current || !state.current.date) return fallback;
+        return {
+            current: {
+                date: state.current.date,
+                morning: Boolean(state.current.morning),
+                evening: Boolean(state.current.evening)
+            },
+            previous: {
+                date: state.previous?.date || addDays(state.current.date, -1),
+                morning: Boolean(state.previous?.morning),
+                evening: Boolean(state.previous?.evening)
+            }
+        };
+    }
+
+    function getState() {
+        try {
+            return normalizeState(JSON.parse(localStorage.getItem(storageKey) || 'null'));
+        } catch (error) {
+            return defaultState();
+        }
+    }
+
+    function saveState(state) {
+        localStorage.setItem(storageKey, JSON.stringify(normalizeState(state)));
+    }
+
+    function render() {
+        const body = document.getElementById('medicineTrackerBody');
+        if (!body) return;
+        const state = getState();
+        const rows = [
+            { key: 'current', label: 'Current', data: state.current },
+            { key: 'previous', label: 'Previous', data: state.previous }
+        ];
+        body.innerHTML = rows.map((row) => {
+            const morningChecked = row.data.morning ? ' checked' : '';
+            const eveningChecked = row.data.evening ? ' checked' : '';
+            return '<tr data-med-row="' + row.key + '">' +
+                '<td style="border-bottom:1px solid #eee; padding:10px; text-align:left;">' +
+                    '<strong>' + row.label + '</strong><br>' +
+                    '<span>' + formatMedicineDate(row.data.date) + '</span>' +
+                '</td>' +
+                '<td style="border-bottom:1px solid #eee; padding:10px;">' +
+                    '<input type="checkbox" data-dose="morning"' + morningChecked + ' aria-label="' + row.label + ' morning medicine">' +
+                '</td>' +
+                '<td style="border-bottom:1px solid #eee; padding:10px;">' +
+                    '<input type="checkbox" data-dose="evening"' + eveningChecked + ' aria-label="' + row.label + ' evening medicine">' +
+                '</td>' +
+            '</tr>';
+        }).join('');
+    }
+
+    function openTracker(event) {
+        if (event) event.stopPropagation();
+        render();
+        const modal = document.getElementById('medicineTrackerModal');
+        if (modal) modal.style.display = 'block';
+    }
+
+    function closeTracker() {
+        const modal = document.getElementById('medicineTrackerModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function updateTracker(event) {
+        const checkbox = event.target.closest('input[type="checkbox"][data-dose]');
+        const row = event.target.closest('[data-med-row]');
+        if (!checkbox || !row) return;
+        const state = getState();
+        const rowKey = row.dataset.medRow;
+        const dose = checkbox.dataset.dose;
+        if (!state[rowKey]) return;
+        state[rowKey][dose] = checkbox.checked;
+        if (rowKey === 'current' && dose === 'evening' && checkbox.checked) {
+            state.previous = {
+                date: state.current.date,
+                morning: Boolean(state.current.morning),
+                evening: true
+            };
+            state.current = {
+                date: addDays(state.previous.date, 1),
+                morning: false,
+                evening: false
+            };
+        }
+        saveState(state);
+        render();
+    }
+
+    function bind() {
+        document.getElementById('medicineToggle')?.addEventListener('click', openTracker);
+        document.getElementById('medicineClose')?.addEventListener('click', closeTracker);
+        const body = document.getElementById('medicineTrackerBody');
+        if (body && !body.dataset.tableTrackerBound) {
+            body.dataset.tableTrackerBound = 'true';
+            body.addEventListener('change', updateTracker);
+        }
+        window.__medicineTableTrackerFallback = true;
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bind);
+    } else {
+        bind();
+    }
+})();
+</script>
 
 </body>
 </html>
