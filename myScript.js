@@ -16,6 +16,30 @@ document.addEventListener('DOMContentLoaded', async function() {
     const API_KEY = 'd1e6fb784b1050cf34f0c8f0b552db49';
     const CITY = 'Jeffersonville';
 
+    document.querySelectorAll('.shortcut-tile').forEach((tile) => {
+        tile.removeAttribute('target');
+        tile.addEventListener('click', (e) => {
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            window.location.href = tile.href;
+        });
+    });
+
+    document.getElementById('aiSearchForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = document.getElementById('aiSearchInput')?.value.trim();
+        if (!query) {
+            if (outputField) outputField.textContent = 'Type something to search first.';
+            return;
+        }
+
+        if (outputField) outputField.textContent = 'Opening AI search...';
+        const searchUrl = new URL('https://www.google.com/search');
+        searchUrl.searchParams.set('udm', '50');
+        searchUrl.searchParams.set('q', query);
+        window.location.href = searchUrl.toString();
+    });
+
     // --- Clock ---
     setInterval(() => {
         if (dateTimeEl) dateTimeEl.textContent = new Date().toLocaleString();
@@ -84,27 +108,31 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!calCont.classList.contains('hidden')) calendar.updateSize();
     });
 
+    document.getElementById('plannerToggle')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showWeeklyPlanner();
+    });
+
   // Add this inside your DOMContentLoaded function
 const todoBtn = document.getElementById('todoToggle');
 
 if (todoBtn) {
     todoBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevents the sidebar/menu logic from interfering
+        e.stopPropagation();
         const taskType = prompt("Enter type (Medicine or Store):");
         const taskDetails = prompt("Enter the item name or note:");
-        
+
         if (taskType && taskDetails) {
             saveTask(taskType, taskDetails);
         }
     });
-} else {
-    console.error("To-Do button not found in the DOM!");
 }
 
    async function saveTask(type, details) {
     const today = new Date().toISOString().split('T')[0];
-    const updatePayload = (type === 'Medicine') 
-        ? { medicine_task: details } 
+    const normalizedType = type.trim().toLowerCase();
+    const updatePayload = normalizedType.startsWith('med')
+        ? { medicine_task: details }
         : { grocery_task: details };
 
     const { error } = await mySupabase
