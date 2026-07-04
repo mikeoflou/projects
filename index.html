@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="myStyle.css">
+    <link rel="stylesheet" href="myStyle.css?v=7">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
 
@@ -15,14 +15,20 @@
 <body>
 
  <div id="headerBar">
-    <button id="toggleNav">☰ Menu</button>
-    <button id="calendarToggle">📅 Calendar</button>
+    <button id="toggleNav" type="button">☰ Menu</button>
+    <button id="calendarToggle" type="button">📅 Calendar</button>
+    <button id="todoToggle" type="button">To-Do</button>
+    <button id="plannerToggle" type="button">Weekly Planner</button>
+
+    <form id="aiSearchForm" class="ai-search-form" role="search">
+        <label class="sr-only" for="aiSearchInput">AI Search</label>
+        <input id="aiSearchInput" type="search" autocomplete="off" placeholder="Ask AI or search the web">
+        <button id="aiSearchButton" type="submit">AI Search</button>
+        <div id="ai-output" aria-live="polite"></div>
+    </form>
 
     <div id="date-time"></div>
     <div id="weather"></div>
-
-    <a class="weatherwidget-io" ...>...</a>
-    ...
 </div>
 
     <a class="weatherwidget-io" href="https://forecast7.com/en/40d71n74d01/new-york/?unit=us" data-label_1="jeffersonville, IN" data-label_2="WEATHER" data-theme="original" >jeffersonville, IN WEATHER</a>
@@ -55,43 +61,43 @@
 
   <div id="main-content">
       <div class="shortcuts-grid">
-          <a class="shortcut-tile" href="https://facebook.com" target="_blank">
+          <a class="shortcut-tile" href="https://facebook.com">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=facebook.com" alt="Facebook"></div>
               <div class="tile-label">Facebook</div>
           </a>
-          <a class="shortcut-tile" href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox" target="_blank">
+          <a class="shortcut-tile" href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=mail.google.com" alt="Gmail"></div>
               <div class="tile-label">Gmail</div>
           </a>
-          <a class="shortcut-tile" href="https://biblegateway.com/" target="_blank">
+          <a class="shortcut-tile" href="https://biblegateway.com/">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=biblegateway.com" alt="Biblegateway"></div>
               <div class="tile-label">Biblegateway</div>
           </a>                
-          <a class="shortcut-tile" href="https://www.ehbcjeff.com/" target="_blank">
+          <a class="shortcut-tile" href="https://www.ehbcjeff.com/">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=ehbcjeff.com" alt="EHBC Jeff"></div>
               <div class="tile-label">EHBC Jeff</div>
           </a>
-          <a class="shortcut-tile" href="https://www.ehbcnewsletterjeff.org" target="_blank">
+          <a class="shortcut-tile" href="https://www.ehbcnewsletterjeff.org">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=ehbcnewsletterjeff.org" alt="EHBC Newsletter"></div>
               <div class="tile-label">EHBC Newsletter</div>
           </a>
-          <a class="shortcut-tile" href="https://www.firstharrison.com/" target="_blank">
+          <a class="shortcut-tile" href="https://www.firstharrison.com/">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=firstharrison.com" alt="First Harrison"></div>
               <div class="tile-label">First Harrison</div>
           </a>
-          <a class="shortcut-tile" href="https://onlinebanking.huntington.com/rol/Auth/login.aspx" target="_blank">
+          <a class="shortcut-tile" href="https://onlinebanking.huntington.com/rol/Auth/login.aspx">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=huntington.com" alt="Huntington"></div>
               <div class="tile-label">Huntington Bank</div>
           </a>
-          <a class="shortcut-tile" href="https://investor.vanguard.com/" target="_blank">
+          <a class="shortcut-tile" href="https://investor.vanguard.com/">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=vanguard.com" alt="Vanguard"></div>
               <div class="tile-label">Vanguard</div>
           </a>
-          <a class="shortcut-tile" href="https://my.ivytech.edu/myivy" target="_blank">
+          <a class="shortcut-tile" href="https://my.ivytech.edu/myivy">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=ivytech.edu" alt="IvyTech"></div>
               <div class="tile-label">MyIvy</div>
           </a>
-          <a class="shortcut-tile" href="https://www.va.gov/louisville-health-care/" target="_blank">
+          <a class="shortcut-tile" href="https://www.va.gov/louisville-health-care/">
               <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=va.gov" alt="VA"></div>
               <div class="tile-label">VA</div>
           </a>
@@ -117,7 +123,7 @@
           <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
       </div>
   </div>
-<script src="myScript.js?v=6"></script>
+<script src="myScript.js?v=7"></script>
 
 </body>
 </html>
