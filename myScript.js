@@ -1,171 +1,291 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-    <link href="https://jsdelivr.net" rel="stylesheet">
-    <script src="https://jsdelivr.net"></script>
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <link rel="stylesheet" href="myStyle.css?v=7">
-    <script src="https://jsdelivr.net"></script>
-</head>
-<body>
+const mySupabase = supabase.createClient(
+  "https://hmzvjojgqaoeyenvvsor.supabase.co",
+  "sb_publishable_-b3XpSFtUWN4nu_O75USFw_z2wVpRKg"
+);
 
-  <div id="headerBar">
-    <button id="toggleNav" type="button">☰ Menu</button>
-    <button id="calendarToggle" type="button">📅 Calendar</button>
-    <button id="todoToggle" type="button">To-Do</button>
-    <button id="medicineToggle" type="button">Medicine Tracker</button>
+document.addEventListener('DOMContentLoaded', async function() {
+    // --- Elements ---
+    const modal = document.getElementById('eventModal');
+    const calendarEl = document.getElementById('calendar');
+    const calCont = document.getElementById('calendarContainer');
+    const sidebar = document.getElementById('sidebar');
+    const dateTimeEl = document.getElementById('date-time');
+    const weatherEl = document.getElementById('weather');
+    const outputField = document.getElementById('ai-output');
     
-     <form id="aiSearchForm" class="ai-search-form" role="search">
-         <label class="sr-only" for="aiSearchInput">AI Search</label>
-         <input id="aiSearchInput" type="search" autocomplete="off" placeholder="Ask AI or search the web">
-         <button id="aiSearchButton" type="submit">AI Search</button>
-         <div id="ai-output" aria-live="polite"></div>
-     </form>
+    const API_KEY = 'd1e6fb784b1050cf34f0c8f0b552db49';
+    const CITY = 'Jeffersonville';
 
-     <div id="date-time"></div>
-     <div id="weather"></div>
-</div>
-     
-<a class="weatherwidget-io" href="https://forecast7.com" data-label_1="jeffersonville, IN" data-label_2="WEATHER" data-theme="original">jeffersonville, IN WEATHER</a>
-<script>
-!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io;}}(document,'script','weatherwidget-io-js');
-</script>
+    document.querySelectorAll('.shortcut-tile').forEach((tile) => {
+        tile.removeAttribute('target');
+        tile.addEventListener('click', (e) => {
+            if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            window.location.href = tile.href;
+        });
+    });
 
-<!-- Medicine Tracker Modal -->
-<div id="medicineTrackerModal" style="display:none; position:fixed; top:8%; left:50%; transform:translateX(-50%); width:min(92%, 720px); max-height:84vh; overflow:auto; background:white; color:#222; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:2000; box-shadow:0 12px 30px rgba(0,0,0,.22);">
-  <h3>Medicine Tracker</h3>
-  <form id="medicineForm" style="display:grid; gap:10px; margin-bottom:14px;">
-    <label for="medicineName">Medicine</label>
-    <input id="medicineName" type="text" autocomplete="off" required placeholder="Name">
-    <label for="medicineDose">Dose</label>
-    <input id="medicineDose" type="text" autocomplete="off" placeholder="Example: 1 pill">
-    <label for="medicineTime">Time</label>
-    <input id="medicineTime" type="time">
-    <button type="submit">Add Medicine</button>
-  </form>
-  <div id="medicineList" aria-live="polite"></div>
-  <button id="medicineClose" type="button" style="margin-top:14px;">Close</button>
-</div>
-
-<!-- Newly Added Fully Functioning To-Do Modal -->
-<div id="todoModal" style="display:none; position:fixed; top:8%; left:50%; transform:translateX(-50%); width:min(92%, 500px); max-height:84vh; overflow:auto; background:white; color:#222; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:2000; box-shadow:0 12px 30px rgba(0,0,0,.22);">
-  <h3>To-Do List</h3>
-  <form id="todoForm" style="display:flex; gap:10px; margin-bottom:14px;">
-    <input id="todoInput" type="text" autocomplete="off" required placeholder="Add a new task..." style="flex:1; padding:5px;">
-    <button type="submit">Add</button>
-  </form>
-  <ul id="todoList" style="list-style:none; padding:0; margin-bottom:14px;"></ul>
-  <button id="todoClose" type="button">Close</button>
-</div>
-
-<!-- Newly Added Copy Code Utility Container -->
-<div style="text-align: center; margin: 20px 0;">
-  <button id="copyCodeBtn" type="button" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-    <i class="fa-solid fa-copy"></i> Copy This File's Code
-  </button>
-</div>
-
-<div id="sidebar">
-      <a href="https://facebook.com">Facebook</a>
-      <a href="https://google.com">Gmail</a>
-      <a href="https://biblegateway.com">Biblegateway</a>                
-      <a href="https://ehbcjeff.com">EHBC Jeff</a>
-      <a href="https://ehbcnewsletterjeff.org">EHBC Newsletter</a>
-      <a href="https://firstharrison.com">First Harrison</a>
-      <a href="https://huntington.com">Huntington Bank</a>
-      <a href="https://vanguard.com">Vanguard</a>
-      <a href="https://ivytech.edu">MyIvy</a>
-      <a href="https://ivytech.edu">IvyLearn</a>
-      <a href="https://va.gov">VA</a>
-</div>
-
-<div id="main-content">
-      <div class="shortcuts-grid">
-          <a class="shortcut-tile" href="https://facebook.com">
-              <div class="tile-icon"><img src="https://google.com" alt="Facebook"></div>
-              <div class="tile-label">Facebook</div>
-          </a>
-          <a class="shortcut-tile" href="https://google.com">
-              <div class="tile-icon"><img src="https://google.com" alt="Gmail"></div>
-              <div class="tile-label">Gmail</div>
-          </a>
-          <a class="shortcut-tile" href="https://biblegateway.com">
-              <div class="tile-icon"><img src="https://google.com" alt="Biblegateway"></div>
-              <div class="tile-label">Biblegateway</div>
-          </a>                    
-          <a class="shortcut-tile" href="https://ehbcjeff.com">
-              <div class="tile-icon"><img src="https://google.com" alt="EHBC Jeff"></div>
-              <div class="tile-label">EHBC Jeff</div>
-          </a>
-          <a class="shortcut-tile" href="https://ehbcnewsletterjeff.org">
-              <div class="tile-icon"><img src="https://google.com" alt="EHBC Newsletter"></div>
-              <div class="tile-label">EHBC Newsletter</div>
-          </a>
-          <a class="shortcut-tile" href="https://firstharrison.com">
-              <div class="tile-icon"><img src="https://google.com" alt="First Harrison"></div>
-              <div class="tile-label">First Harrison</div>
-          </a>
-          <a class="shortcut-tile" href="https://huntington.com">
-              <div class="tile-icon"><img src="https://google.com" alt="Huntington"></div>
-              <div class="tile-label">Huntington Bank</div>
-          </a>
-          <a class="shortcut-tile" href="https://vanguard.com">
-              <div class="tile-icon"><img src="https://google.com" alt="Vanguard"></div>
-              <div class="tile-label">Vanguard</div>
-          </a>
-          <a class="shortcut-tile" href="https://ivytech.edu">
-              <div class="tile-icon"><img src="https://google.com" alt="IvyTech"></div>
-              <div class="tile-label">MyIvy</div>
-          </a>
-          <a class="shortcut-tile" href="https://va.gov">
-              <div class="tile-icon"><img src="https://google.com" alt="VA"></div>
-              <div class="tile-label">VA</div>
-          </a>
-      </div>
-</div>
-
-<div id="calendarContainer" class="hidden">
-      <div id="calendar"></div>
-</div>
-
-<div id="eventModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-      <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
-          <h3>Appointment Details</h3>
-          <label for="eventTitle">Title:</label>
-          <input type="text" id="eventTitle" style="width:100%; margin-bottom:10px;">
-          <label for="eventDesc">Description:</label>
-          <input type="text" id="eventDesc" style="width:100%; margin-bottom:10px;">
-          <label for="eventTime">Time (HH:MM):</label>
-          <input type="time" id="eventTime" style="width:100%; margin-bottom:10px;">
-          <label><input type="checkbox" id="eventAmPm"> PM (Uncheck for AM)</label>
-          <br><br>
-          <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save</button>
-          <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
-      </div>
-</div>
-
-<!-- Fallback Javascript triggers to power layout toggles, Todo tasks, and the quick copy function -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Modal Selectors
-    const medModal = document.getElementById('medicineTrackerModal');
-    const todoModal = document.getElementById('todoModal');
-    
-    // Toggle Button Event Listeners
-    document.getElementById('medicineToggle').addEventListener('click', () => medModal.style.display = 'block');
-    document.getElementById('medicineClose').addEventListener('click', () => medModal.style.display = 'none');
-    
-    document.getElementById('todoToggle').addEventListener('click', () => todoModal.style.display = 'block');
-    document.getElementById('todoClose').addEventListener('click', () => todoModal.style.display = 'none');
-
-    // To-Do Tracking Engine
-    const todoForm = document.getElementById('todoForm');
-    const todoInput = document.getElementById('todoInput');
-    const todoList = document.getElementById('todoList');
-
-    todoForm.addEventListener('submit', (e) => {
+    document.getElementById('aiSearchForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
-        const taskText = todoInput.value.trim();
+        const query = document.getElementById('aiSearchInput')?.value.trim();
+        if (!query) {
+            if (outputField) outputField.textContent = 'Type something to search first.';
+            return;
+        }
+
+        if (outputField) outputField.textContent = 'Opening AI search...';
+        const searchUrl = new URL('https://www.google.com/search');
+        searchUrl.searchParams.set('udm', '50');
+        searchUrl.searchParams.set('q', query);
+        window.location.href = searchUrl.toString();
+    });
+
+    const todoBtn = document.getElementById('todoToggle');
+    todoBtn?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const taskType = prompt("Enter type (Medicine or Store):");
+        const taskDetails = prompt("Enter the item name or note:");
+
+        if (taskType && taskDetails) {
+            saveTask(taskType, taskDetails);
+        }
+    });
+
+    // --- Clock ---
+    setInterval(() => {
+        if (dateTimeEl) dateTimeEl.textContent = new Date().toLocaleString();
+    }, 1000);
+
+    // --- Weather ---
+    async function fetchWeather() {
+        try {
+            const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=imperial&appid=${API_KEY}`);
+            if (!response.ok) throw new Error('Weather fetch failed');
+            const data = await response.json();
+            if (weatherEl) weatherEl.textContent = `${Math.round(data.main.temp)}°F, ${data.weather[0].main}`;
+        } catch (error) {
+            console.error("Weather failed:", error);
+            if (weatherEl) weatherEl.textContent = "Weather unavailable";
+        }
+    }
+    fetchWeather();
+    setInterval(fetchWeather, 600000);
+
+    // --- Sidebar and Nav ---
+    document.getElementById('toggleNav')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.style.width = (sidebar.style.width === "250px") ? "0" : "250px";
+    });
+
+    document.addEventListener('click', (e) => {
+        if (sidebar && sidebar.style.width === "250px" && !sidebar.contains(e.target) && e.target.id !== 'toggleNav') {
+            sidebar.style.width = "0";
+        }
+    });
+
+    // --- Calendar Logic ---
+    let events = [];
+    try {
+        let { data } = await mySupabase.from('events').select('*');
+        if (data) events = data;
+    } catch (err) { console.error("Error loading events:", err); }
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        events: events.map(e => ({
+            id: e.id, 
+            title: (e.time ? e.time.substring(0, 5) + " " : "") + (e.title || ""),
+            start: e.start_date,
+            extendedProps: { description: e.Description, time: e.time }
+        })),
+        dateClick: (info) => {
+            window.selectedEventId = null;
+            window.selectedDate = info.dateStr;
+            modal.style.display = 'block';
+        },
+        eventClick: (info) => {
+            window.selectedEventId = info.event.id;
+            document.getElementById('eventTitle').value = info.event.title.replace(/^\d{2}:\d{2}\s/, '');
+            document.getElementById('eventDesc').value = info.event.extendedProps.description || '';
+            modal.style.display = 'block';
+        }
+    });
+    calendar.render();
+
+    document.getElementById('calendarToggle')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        calCont.classList.toggle('hidden');
+        if (!calCont.classList.contains('hidden')) calendar.updateSize();
+    });
+
+    document.getElementById('medicineToggle')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showMedicineTracker();
+    });
+
+    document.getElementById('medicineForm')?.addEventListener('submit', addMedicineItem);
+    document.getElementById('medicineClose')?.addEventListener('click', closeMedicineTracker);
+    document.getElementById('medicineList')?.addEventListener('click', updateMedicineItem);
+
+   async function saveTask(type, details) {
+    const today = new Date().toISOString().split('T')[0];
+    const normalizedType = type.trim().toLowerCase();
+    const updatePayload = normalizedType.startsWith('med')
+        ? { medicine_task: details }
+        : { grocery_task: details };
+
+    const { error } = await mySupabase
+        .from('events')
+        .insert([{
+            start_date: today,
+            ...updatePayload
+        }]);
+
+    if (error) console.error("Error saving task:", error);
+    else {
+        alert("Task saved!");
+        location.reload();
+    }
+}
+  
+
+    // --- Modal Controls ---
+    window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
+
+    document.getElementById('saveBtn')?.addEventListener('click', async () => {
+        const payload = {
+            title: document.getElementById('eventTitle').value,
+            Description: document.getElementById('eventDesc').value,
+            time: document.getElementById('eventTime').value ? document.getElementById('eventTime').value + ":00" : null
+        };
+        if (window.selectedEventId) {
+            await mySupabase.from('events').update(payload).eq('id', window.selectedEventId);
+        } else {
+            await mySupabase.from('events').insert([{ ...payload, start_date: window.selectedDate }]);
+        }
+        location.reload();
+    });
+
+    document.getElementById('deleteBtn')?.addEventListener('click', async () => {
+        if (window.selectedEventId) {
+            await mySupabase.from('events').delete().eq('id', window.selectedEventId);
+            location.reload();
+        }
+    });
+});
+function getMedicineItems() {
+    try {
+        const stored = JSON.parse(localStorage.getItem('medicineTrackerV1') || '[]');
+        return Array.isArray(stored) ? stored : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveMedicineItems(items) {
+    localStorage.setItem('medicineTrackerV1', JSON.stringify(items));
+}
+
+function renderMedicineTracker() {
+    const list = document.getElementById('medicineList');
+    if (!list) return;
+
+    const items = getMedicineItems();
+    list.innerHTML = '';
+
+    if (!items.length) {
+        const emptyMessage = document.createElement('p');
+        emptyMessage.textContent = 'No medicines added yet.';
+        list.appendChild(emptyMessage);
+        return;
+    }
+
+    items.forEach((item) => {
+        const card = document.createElement('div');
+        card.style.cssText = 'border:1px solid #ddd; border-radius:8px; padding:10px; margin-top:10px; background:#fafafa;';
+
+        const title = document.createElement('strong');
+        title.textContent = item.name;
+        card.appendChild(title);
+
+        const dose = document.createElement('div');
+        dose.textContent = (item.dose || 'No dose') + ' - ' + (item.time || 'No time set');
+        card.appendChild(dose);
+
+        const lastTaken = document.createElement('div');
+        lastTaken.textContent = 'Last taken: ' + (item.lastTaken || 'Not marked yet');
+        card.appendChild(lastTaken);
+
+        const takenButton = document.createElement('button');
+        takenButton.type = 'button';
+        takenButton.dataset.medTaken = item.id;
+        takenButton.textContent = 'Taken';
+        takenButton.style.marginRight = '8px';
+        card.appendChild(takenButton);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.type = 'button';
+        deleteButton.dataset.medDelete = item.id;
+        deleteButton.textContent = 'Delete';
+        card.appendChild(deleteButton);
+
+        list.appendChild(card);
+    });
+}
+
+function showMedicineTracker() {
+    renderMedicineTracker();
+    const modal = document.getElementById('medicineTrackerModal');
+    if (modal) modal.style.display = 'block';
+}
+
+function closeMedicineTracker() {
+    const modal = document.getElementById('medicineTrackerModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function addMedicineItem(event) {
+    event.preventDefault();
+
+    const nameInput = document.getElementById('medicineName');
+    const doseInput = document.getElementById('medicineDose');
+    const timeInput = document.getElementById('medicineTime');
+    const name = nameInput?.value.trim();
+
+    if (!name) return;
+
+    const items = getMedicineItems();
+    items.unshift({
+        id: Date.now().toString(36),
+        name,
+        dose: doseInput?.value.trim() || '',
+        time: timeInput?.value || '',
+        lastTaken: ''
+    });
+
+    saveMedicineItems(items);
+    event.target.reset();
+    renderMedicineTracker();
+}
+
+function updateMedicineItem(event) {
+    const takenButton = event.target.closest('[data-med-taken]');
+    const deleteButton = event.target.closest('[data-med-delete]');
+
+    if (!takenButton && !deleteButton) return;
+
+    let items = getMedicineItems();
+
+    if (takenButton) {
+        const item = items.find((medicine) => medicine.id === takenButton.dataset.medTaken);
+        if (item) item.lastTaken = new Date().toLocaleString();
+    }
+
+    if (deleteButton) {
+        items = items.filter((medicine) => medicine.id !== deleteButton.dataset.medDelete);
+    }
+
+    saveMedicineItems(items);
+    renderMedicineTracker();
+}
