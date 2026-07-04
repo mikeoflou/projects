@@ -4,32 +4,38 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
+    <!-- Dependencies & Plugins -->
     <link href="https://jsdelivr.net" rel="stylesheet">
     <script src="https://jsdelivr.net"></script>
-    <link rel="stylesheet" href="myStyle.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="myStyle.css?v=7">
+    <script src="https://jsdelivr.net"></script>
+</head>
 <body>
 
- <div id="headerBar">
+  <div id="headerBar">
     <button id="toggleNav" type="button">☰ Menu</button>
     <button id="calendarToggle" type="button">📅 Calendar</button>
-    <button id="todoToggle" type="button">To-Do</button>
+    <button id="todoToggle" type="button">To-Do/Planner</button>
     <button id="medicineToggle" type="button">Medicine Tracker</button>
+    
+     <form id="aiSearchForm" class="ai-search-form" role="search">
+         <label class="sr-only" for="aiSearchInput">AI Search</label>
+         <input id="aiSearchInput" type="search" autocomplete="off" placeholder="Ask AI or search the web">
+         <button id="aiSearchButton" type="submit">AI Search</button>
+         <div id="ai-output" aria-live="polite"></div>
+     </form>
 
-    <form id="aiSearchForm" class="ai-search-form" role="search">
-        <label class="sr-only" for="aiSearchInput">AI Search</label>
-        <input id="aiSearchInput" type="search" autocomplete="off" placeholder="Ask AI or search the web">
-        <button id="aiSearchButton" type="submit">AI Search</button>
-        <div id="ai-output" aria-live="polite"></div>
-    </form>
-
-    <div id="date-time"></div>
-    <div id="weather"></div>
+     <div id="date-time"></div>
+     <div id="weather"></div>
 </div>
-
-    <a class="weatherwidget-io" href="https://forecast7.com/en/40d71n74d01/Jeffersonville-IN/?unit=us" data-label_1="jeffersonville, IN" data-label_2="WEATHER" data-theme="original" >jeffersonville, IN WEATHER</a>
+     
+<a class="weatherwidget-io" href="https://forecast7.com" data-label_1="jeffersonville, IN" data-label_2="WEATHER" data-theme="original">jeffersonville, IN WEATHER</a>
 <script>
-!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io;}}(document,'script','weatherwidget-io-js');
 </script>
+
+<!-- Medicine Tracker Modal Framework -->
 <div id="medicineTrackerModal" style="display:none; position:fixed; top:8%; left:50%; transform:translateX(-50%); width:min(92%, 720px); max-height:84vh; overflow:auto; background:white; color:#222; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:2000; box-shadow:0 12px 30px rgba(0,0,0,.22);">
   <h3>Medicine Tracker</h3>
   <form id="medicineForm" style="display:grid; gap:10px; margin-bottom:14px;">
@@ -39,90 +45,132 @@
     <input id="medicineDose" type="text" autocomplete="off" placeholder="Example: 1 pill">
     <label for="medicineTime">Time</label>
     <input id="medicineTime" type="time">
-    <button type="submit">Add Medicine</button>
+    <button type="submit">Add Medicine To Database</button>
   </form>
   <div id="medicineList" aria-live="polite"></div>
   <button id="medicineClose" type="button" style="margin-top:14px;">Close</button>
 </div>
+
+<!-- Weekly Planner Data Modal Framework -->
+<div id="weeklyPlannerModal" style="display:none; position:fixed; top:8%; left:50%; transform:translateX(-50%); width:min(92%, 600px); max-height:84vh; overflow:auto; background:white; color:#222; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:2000; box-shadow:0 12px 30px rgba(0,0,0,.22);">
+  <h3>Weekly Task Planner Log</h3>
+  <table style="width:100%; border-collapse:collapse; margin-bottom:15px; text-align:left;">
+    <thead>
+      <tr style="border-bottom:2px solid #333;">
+        <th style="padding:8px;">Date</th>
+        <th style="padding:8px;">Medicine Tasks</th>
+        <th style="padding:8px;">Grocery Tasks</th>
+      </tr>
+    </thead>
+    <tbody id="weeklyBody">
+      <!-- Database records will render here -->
+    </tbody>
+  </table>
+  <button id="plannerClose" type="button" style="padding:6px 12px; cursor:pointer;">Close Planner</button>
+</div>
+
+<!-- Dashboard Quick Copy Module -->
+<div style="text-align: center; margin: 20px 0;">
+  <button id="copyCodeBtn" type="button" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+    <i class="fa-solid fa-copy"></i> Copy Dashboard Source Code
+  </button>
+</div>
+
 <div id="sidebar">
       <a href="https://facebook.com">Facebook</a>
-      <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>
-      <a href="https://biblegateway.com/">Biblegateway</a>                
-      <a href="https://www.ehbcjeff.com/">EBHC Jeff</a>
-      <a href="https://www.ehbcnewsletterjeff.org">EHBC Newsletter</a>
-      <a href="https://www.firstharrison.com/">First Harrison</a>
-      <a href="https://onlinebanking.huntington.com/rol/Auth/login.aspx">Huntington Bank</a>
-      <a href="https://investor.vanguard.com/">Vanguard</a>
-      <a href="https://my.ivytech.edu/myivy">IvyLearn(Outlook)</a>
-      <a href="https://ivylearn.ivytech.edu/courses/1405942/modules">MyIvy</a>
-      <a href="https://www.va.gov/louisville-health-care/">VA</a>
-  </div>
+      <a href="https://google.com">Gmail</a>
+      <a href="https://biblegateway.com">Biblegateway</a>                
+      <a href="https://ehbcjeff.com">EHBC Jeff</a>
+      <a href="https://ehbcnewsletterjeff.org">EHBC Newsletter</a>
+      <a href="https://firstharrison.com">First Harrison</a>
+      <a href="https://huntington.com">Huntington Bank</a>
+      <a href="https://vanguard.com">Vanguard</a>
+      <a href="https://ivytech.edu">MyIvy</a>
+      <a href="https://ivytech.edu">IvyLearn</a>
+      <a href="https://va.gov">VA</a>
+</div>
 
-  <div id="main-content">
+<div id="main-content">
       <div class="shortcuts-grid">
           <a class="shortcut-tile" href="https://facebook.com">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=facebook.com" alt="Facebook"></div>
+              <div class="tile-icon"><img src="https://google.com" alt="Facebook"></div>
               <div class="tile-label">Facebook</div>
           </a>
-          <a class="shortcut-tile" href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=mail.google.com" alt="Gmail"></div>
+          <a class="shortcut-tile" href="https://google.com">
+              <div class="tile-icon"><img src="https://google.com" alt="Gmail"></div>
               <div class="tile-label">Gmail</div>
           </a>
-          <a class="shortcut-tile" href="https://biblegateway.com/">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=biblegateway.com" alt="Biblegateway"></div>
+          <a class="shortcut-tile" href="https://biblegateway.com">
+              <div class="tile-icon"><img src="https://google.com" alt="Biblegateway"></div>
               <div class="tile-label">Biblegateway</div>
-          </a>                
-          <a class="shortcut-tile" href="https://www.ehbcjeff.com/">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=ehbcjeff.com" alt="EHBC Jeff"></div>
+          </a>                    
+          <a class="shortcut-tile" href="https://ehbcjeff.com">
+              <div class="tile-icon"><img src="https://google.com" alt="EHBC Jeff"></div>
               <div class="tile-label">EHBC Jeff</div>
           </a>
-          <a class="shortcut-tile" href="https://www.ehbcnewsletterjeff.org">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=ehbcnewsletterjeff.org" alt="EHBC Newsletter"></div>
+          <a class="shortcut-tile" href="https://ehbcnewsletterjeff.org">
+              <div class="tile-icon"><img src="https://google.com" alt="EHBC Newsletter"></div>
               <div class="tile-label">EHBC Newsletter</div>
           </a>
-          <a class="shortcut-tile" href="https://www.firstharrison.com/">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=firstharrison.com" alt="First Harrison"></div>
+          <a class="shortcut-tile" href="https://firstharrison.com">
+              <div class="tile-icon"><img src="https://google.com" alt="First Harrison"></div>
               <div class="tile-label">First Harrison</div>
           </a>
-          <a class="shortcut-tile" href="https://onlinebanking.huntington.com/rol/Auth/login.aspx">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=huntington.com" alt="Huntington"></div>
+          <a class="shortcut-tile" href="https://huntington.com">
+              <div class="tile-icon"><img src="https://google.com" alt="Huntington"></div>
               <div class="tile-label">Huntington Bank</div>
           </a>
-          <a class="shortcut-tile" href="https://investor.vanguard.com/">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=vanguard.com" alt="Vanguard"></div>
+          <a class="shortcut-tile" href="https://vanguard.com">
+              <div class="tile-icon"><img src="https://google.com" alt="Vanguard"></div>
               <div class="tile-label">Vanguard</div>
           </a>
-          <a class="shortcut-tile" href="https://my.ivytech.edu/myivy">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=ivytech.edu" alt="IvyTech"></div>
+          <a class="shortcut-tile" href="https://ivytech.edu">
+              <div class="tile-icon"><img src="https://google.com" alt="IvyTech"></div>
               <div class="tile-label">MyIvy</div>
           </a>
-          <a class="shortcut-tile" href="https://www.va.gov/louisville-health-care/">
-              <div class="tile-icon"><img src="https://www.google.com/s2/favicons?sz=64&domain=va.gov" alt="VA"></div>
+          <a class="shortcut-tile" href="https://va.gov">
+              <div class="tile-icon"><img src="https://google.com" alt="VA"></div>
               <div class="tile-label">VA</div>
           </a>
       </div>
-  </div>
+</div>
 
-  <div id="calendarContainer" class="hidden">
+<div id="calendarContainer" class="hidden">
       <div id="calendar"></div>
-  </div>
+</div>
 
-  <div id="eventModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+<div id="eventModal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
       <div style="background:white; margin:10% auto; padding:20px; width:400px; border-radius:8px;">
           <h3>Appointment Details</h3>
-          <label>Title:</label>
+          <label for="eventTitle">Title:</label>
           <input type="text" id="eventTitle" style="width:100%; margin-bottom:10px;">
-          <label>Description:</label>
+          <label for="eventDesc">Description:</label>
           <input type="text" id="eventDesc" style="width:100%; margin-bottom:10px;">
-          <label>Time (HH:MM):</label>
+          <label for="eventTime">Time (HH:MM):</label>
           <input type="time" id="eventTime" style="width:100%; margin-bottom:10px;">
           <label><input type="checkbox" id="eventAmPm"> PM (Uncheck for AM)</label>
           <br><br>
           <button id="saveBtn" style="width:100%; background:green; color:white; border:none; padding:10px; cursor:pointer;">Save</button>
           <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
       </div>
-  </div>
-<script src="myScript.js?v=8"></script>
+</div>
 
-</body>
-</html>
+<!-- Consolidated Control Script Engines -->
+<script>
+const mySupabase = supabase.createClient(
+    "https://hmzvjojgqaoeyenvvsor.supabase.co",
+    "sb_publishable_-b3XpSFtUWN4nu_O75USFw_z2wVpRKg"
+);
+
+document.addEventListener('DOMContentLoaded', async function() {
+    // --- Interface Element Maps ---
+    const modal = document.getElementById('eventModal');
+    const medModal = document.getElementById('medicineTrackerModal');
+    const plannerModal = document.getElementById('weeklyPlannerModal');
+    const calendarEl = document.getElementById('calendar');
+    const calCont = document.getElementById('calendarContainer');
+    const sidebar = document.getElementById('sidebar');
+    const dateTimeEl = document.getElementById('date-time');
+    const weatherEl = document.getElementById('weather');
+    const outputField = document.getElementById('ai-output');
+    
