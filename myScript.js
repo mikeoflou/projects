@@ -14,7 +14,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     const outputField = document.getElementById('ai-output');
     
     const API_KEY = 'd1e6fb784b1050cf34f0c8f0b552db49';
-    const CITY = 'Jeffersonville';
+    const WEATHER_LAT = '38.2776';
+    const WEATHER_LON = '-85.7372';
+    const WEATHER_REFRESH_MS = 5 * 60 * 1000;
 
     document.querySelectorAll('.shortcut-tile').forEach((tile) => {
         tile.removeAttribute('target');
@@ -54,17 +56,29 @@ document.addEventListener('DOMContentLoaded', async function() {
     // --- Weather ---
     async function fetchWeather() {
         try {
-            const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${CITY}&units=imperial&appid=${API_KEY}`);
+            if (weatherEl && !weatherEl.textContent) weatherEl.textContent = 'Loading weather...';
+
+            const weatherUrl = new URL('https://api.openweathermap.org/data/2.5/weather');
+            weatherUrl.searchParams.set('lat', WEATHER_LAT);
+            weatherUrl.searchParams.set('lon', WEATHER_LON);
+            weatherUrl.searchParams.set('units', 'imperial');
+            weatherUrl.searchParams.set('appid', API_KEY);
+            weatherUrl.searchParams.set('_', String(Date.now()));
+
+            const response = await fetch(weatherUrl.toString(), { cache: 'no-store' });
             if (!response.ok) throw new Error('Weather fetch failed');
             const data = await response.json();
-            if (weatherEl) weatherEl.textContent = `${Math.round(data.main.temp)}°F, ${data.weather[0].main}`;
+            const temp = Math.round(data.main.temp);
+            const condition = data.weather?.[0]?.description || data.weather?.[0]?.main || 'current conditions';
+            const updatedAt = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            if (weatherEl) weatherEl.textContent = `${temp}\u00b0F, ${condition} updated ${updatedAt}`;
         } catch (error) {
             console.error("Weather failed:", error);
             if (weatherEl) weatherEl.textContent = "Weather unavailable";
         }
     }
     fetchWeather();
-    setInterval(fetchWeather, 600000);
+    setInterval(fetchWeather, WEATHER_REFRESH_MS);
 
     // --- Sidebar and Nav ---
     document.getElementById('toggleNav')?.addEventListener('click', (e) => {
