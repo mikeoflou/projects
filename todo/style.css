@@ -15,6 +15,16 @@ html.embedded {
     --panel: tan;
 }
 
+html.embedded body,
+html.embedded .tool-section,
+html.embedded table,
+html.embedded th,
+html.embedded td,
+html.embedded input[type="text"],
+html.embedded input[type="date"] {
+    background: tan;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -92,19 +102,9 @@ tr:last-child td {
     border-bottom: 0;
 }
 
-.medicine-table th:nth-child(2),
-.medicine-table th:nth-child(3),
-.medicine-table td:nth-child(2),
-.medicine-table td:nth-child(3),
 .todo-table th:nth-child(3),
 .todo-table td:nth-child(3) {
     text-align: center;
-}
-
-.medicine-table td:first-child span {
-    display: block;
-    color: var(--muted);
-    margin-top: 3px;
 }
 
 .check-form {
