@@ -137,7 +137,7 @@ body {
     transform: translateX(-50%);
     width: min(94vw, 900px);
     height: min(86vh, 760px);
-    background: #f5f5dc;
+    background: tan;
     color: #222;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -182,7 +182,7 @@ body {
     flex: 1;
     width: 100%;
     border: 0;
-    background: #f5f5dc;
+    background: tan;
 }
 
 /* --- Shortcut Grid Layout Block --- */

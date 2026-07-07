@@ -79,6 +79,7 @@ function medicineTrackerRows() {
 }
 
 function renderMedicine() {
+    if (!medicineRows) return;
     medicineRows.replaceChildren();
 
     for (const row of medicineTrackerRows()) {

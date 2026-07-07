@@ -11,7 +11,8 @@
 }
 
 html.embedded {
-    --bg: #f5f5dc;
+    --bg: tan;
+    --panel: tan;
 }
 
 * {
