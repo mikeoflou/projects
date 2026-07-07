@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <header class="app-header">
+            <h1>To Do</h1>
+        </header>
+
+        <section id="medicine" class="tool-section">
+            <div class="section-title-row">
+                <h2>Medicine Tracker</h2>
+            </div>
+
+            <table class="medicine-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Morning</th>
+                        <th>Evening</th>
+                    </tr>
+                </thead>
+                <tbody id="medicineRows"></tbody>
+            </table>
+        </section>
+
+        <section class="tool-section">
+            <div class="section-title-row">
+                <h2>Tasks</h2>
+            </div>
+
+            <form id="todoForm" class="todo-form">
+                <input type="text" id="todoText" placeholder="New task" aria-label="New task">
+                <input type="date" id="todoDate" aria-label="Task date">
+                <button type="submit">Add</button>
+            </form>
+
+            <table class="todo-table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Date</th>
+                        <th>Done</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="todoRows"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

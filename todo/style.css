@@ -1,0 +1,199 @@
+:root {
+    color-scheme: light;
+    --bg: #f5f7fb;
+    --panel: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --line: #d7dde7;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --danger: #b42318;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.container {
+    width: min(820px, calc(100% - 24px));
+    margin: 0 auto;
+    padding: 24px 0 40px;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+h1,
+h2 {
+    margin: 0;
+    letter-spacing: 0;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.15rem;
+}
+
+.tool-section {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 18px;
+    padding: 16px;
+}
+
+.section-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border-bottom: 1px solid var(--line);
+    padding: 12px 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+.medicine-table th:nth-child(2),
+.medicine-table th:nth-child(3),
+.medicine-table td:nth-child(2),
+.medicine-table td:nth-child(3),
+.todo-table th:nth-child(3),
+.todo-table td:nth-child(3) {
+    text-align: center;
+}
+
+.medicine-table td:first-child span {
+    display: block;
+    color: var(--muted);
+    margin-top: 3px;
+}
+
+.check-form {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+input[type="checkbox"] {
+    width: 26px;
+    height: 26px;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.todo-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+input[type="text"],
+input[type="date"] {
+    min-height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0 10px;
+    color: var(--text);
+    font: inherit;
+}
+
+button {
+    min-height: 42px;
+    border: 0;
+    border-radius: 6px;
+    padding: 0 14px;
+    background: var(--accent);
+    color: #ffffff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button:hover,
+button:focus-visible {
+    background: var(--accent-dark);
+}
+
+.delete {
+    background: transparent;
+    color: var(--danger);
+    min-height: 34px;
+    padding: 0 8px;
+}
+
+.delete:hover,
+.delete:focus-visible {
+    background: #fee4e2;
+    color: var(--danger);
+}
+
+.is-done td:first-child {
+    color: var(--muted);
+    text-decoration: line-through;
+}
+
+.empty-row {
+    color: var(--muted);
+    text-align: center;
+}
+
+@media (max-width: 640px) {
+    .container {
+        width: min(100% - 16px, 820px);
+        padding-top: 12px;
+    }
+
+    .tool-section {
+        padding: 12px;
+    }
+
+    th,
+    td {
+        padding: 10px 6px;
+    }
+
+    .todo-form {
+        grid-template-columns: 1fr;
+    }
+
+    .todo-table th:nth-child(2),
+    .todo-table td:nth-child(2) {
+        display: none;
+    }
+}

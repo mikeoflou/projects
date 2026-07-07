@@ -43,12 +43,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const todoBtn = document.getElementById('todoToggle');
     todoBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
-        const taskType = prompt("Enter type (Medicine or Store):");
-        const taskDetails = prompt("Enter the item name or note:");
-
-        if (taskType && taskDetails) {
-            saveTask(taskType, taskDetails);
-        }
+        window.location.href = 'todo/';
     });
 
     // --- Clock ---
@@ -131,28 +126,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         medicineTrackerBody.addEventListener('change', updateMedicineTracker);
     }
     window.__medicineTableTrackerScript = true;
-
-   async function saveTask(type, details) {
-    const today = new Date().toISOString().split('T')[0];
-    const normalizedType = type.trim().toLowerCase();
-    const updatePayload = normalizedType.startsWith('med')
-        ? { medicine_task: details }
-        : { grocery_task: details };
-
-    const { error } = await mySupabase
-        .from('events')
-        .insert([{
-            start_date: today,
-            ...updatePayload
-        }]);
-
-    if (error) console.error("Error saving task:", error);
-    else {
-        alert("Task saved!");
-        location.reload();
-    }
-}
-  
 
     // --- Modal Controls ---
     window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };

@@ -6,6 +6,7 @@ This is a custom dashboard and browser extension that I use as my personal "New 
 - **Centralized Links:** Quick access to my most-used sites (Gmail, BibleGateway, etc.).
 - **Customizable:** Built with HTML, CSS, and JavaScript.
 - **Browser Integration:** Configured as a Chrome extension for automatic loading.
+- **To-Do App:** Static todo and medicine tracker at `/todo/`.
 
 ## How to use
 1. Clone this repository.
