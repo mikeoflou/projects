@@ -12,11 +12,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     const dateTimeEl = document.getElementById('date-time');
     const weatherEl = document.getElementById('weather');
     const outputField = document.getElementById('ai-output');
+    const todoWidgetModal = document.getElementById('todoWidgetModal');
     
     const API_KEY = 'd1e6fb784b1050cf34f0c8f0b552db49';
     const WEATHER_LAT = '38.2776';
     const WEATHER_LON = '-85.7372';
     const WEATHER_REFRESH_MS = 5 * 60 * 1000;
+
+    function setAiOutput(message) {
+        if (!outputField) return;
+        if ('value' in outputField) {
+            outputField.value = message;
+        } else {
+            outputField.textContent = message;
+        }
+    }
 
     document.querySelectorAll('.shortcut-tile').forEach((tile) => {
         tile.removeAttribute('target');
@@ -31,11 +41,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.preventDefault();
         const query = document.getElementById('aiSearchInput')?.value.trim();
         if (!query) {
-            if (outputField) outputField.textContent = 'Type something to search first.';
+            setAiOutput('Type something to search first.');
             return;
         }
 
-        if (outputField) outputField.textContent = 'Opening AI search...';
+        setAiOutput('Opening AI search...');
         const searchUrl = new URL('https://www.google.com/search');
         searchUrl.searchParams.set('udm', '50');
         searchUrl.searchParams.set('q', query);
@@ -45,7 +55,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     const todoBtn = document.getElementById('todoToggle');
     todoBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
-        window.location.href = 'todo/';
+        todoWidgetModal?.classList.add('is-open');
+        todoWidgetModal?.setAttribute('aria-hidden', 'false');
+    });
+
+    document.getElementById('todoClose')?.addEventListener('click', () => {
+        todoWidgetModal?.classList.remove('is-open');
+        todoWidgetModal?.setAttribute('aria-hidden', 'true');
     });
 
     // --- Clock ---

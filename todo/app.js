@@ -1,5 +1,9 @@
 const STORAGE_KEY = "mikesTodoPage.v1";
 
+if (new URLSearchParams(window.location.search).get("embed") === "1") {
+    document.documentElement.classList.add("embedded");
+}
+
 const state = loadState();
 const medicineRows = document.querySelector("#medicineRows");
 const todoRows = document.querySelector("#todoRows");

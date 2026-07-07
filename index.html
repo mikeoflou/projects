@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="myStyle.css?v=9">
+    <link rel="stylesheet" href="myStyle.css?v=10">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
 
@@ -24,7 +24,7 @@
         <label class="sr-only" for="aiSearchInput">AI Search</label>
         <input id="aiSearchInput" type="search" autocomplete="off" placeholder="Ask AI or search the web">
         <button id="aiSearchButton" type="submit">AI Search</button>
-        <div id="ai-output" aria-live="polite"></div>
+        <textarea id="ai-output" rows="2" readonly aria-live="polite"></textarea>
     </form>
 
     <div id="date-time"></div>
@@ -49,6 +49,15 @@
   </table>
   <button id="medicineClose" type="button" style="margin-top:14px;">Close</button>
 </div>
+
+<div id="todoWidgetModal" class="widget-modal" aria-hidden="true">
+  <div class="widget-modal-header">
+    <h3>To-Do List</h3>
+    <button id="todoClose" type="button">Close</button>
+  </div>
+  <iframe id="todoWidgetFrame" title="To-Do List" src="todo/?embed=1"></iframe>
+</div>
+
 <div id="sidebar">
       <a href="https://facebook.com">Facebook</a>
       <a href="https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox">Gmail</a>
@@ -127,7 +136,7 @@
           <button id="deleteBtn" style="width:100%; background:red; color:white; border:none; padding:10px; cursor:pointer; margin-top:5px;">Delete</button>
       </div>
   </div>
-<script src="myScript.js?v=12"></script>
+<script src="myScript.js?v=13"></script>
 <script>
 (() => {
     const storageKey = 'medicineTrackerTableV1';

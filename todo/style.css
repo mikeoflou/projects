@@ -10,6 +10,10 @@
     --danger: #b42318;
 }
 
+html.embedded {
+    --bg: #f5f5dc;
+}
+
 * {
     box-sizing: border-box;
 }
