@@ -9,7 +9,7 @@
             document.documentElement.classList.add("embedded");
         }
     </script>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
     <main class="container">
@@ -25,6 +25,7 @@
             <form id="todoForm" class="todo-form">
                 <input type="text" id="todoText" placeholder="New task" aria-label="New task">
                 <input type="date" id="todoDate" aria-label="Task date">
+                <select id="todoTime" aria-label="Task time"></select>
                 <button type="submit">Add</button>
             </form>
 
@@ -33,6 +34,7 @@
                     <tr>
                         <th>Task</th>
                         <th>Date</th>
+                        <th>Time</th>
                         <th>Done</th>
                         <th></th>
                     </tr>
@@ -42,6 +44,6 @@
         </section>
     </main>
 
-    <script src="app.js?v=5"></script>
+    <script src="app.js?v=6"></script>
 </body>
 </html>

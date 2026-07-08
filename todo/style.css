@@ -21,7 +21,8 @@ html.embedded table,
 html.embedded th,
 html.embedded td,
 html.embedded input[type="text"],
-html.embedded input[type="date"] {
+html.embedded input[type="date"],
+html.embedded select {
     background: tan;
 }
 
@@ -102,8 +103,8 @@ tr:last-child td {
     border-bottom: 0;
 }
 
-.todo-table th:nth-child(3),
-.todo-table td:nth-child(3) {
+.todo-table th:nth-child(4),
+.todo-table td:nth-child(4) {
     text-align: center;
 }
 
@@ -123,13 +124,14 @@ input[type="checkbox"] {
 
 .todo-form {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
     gap: 10px;
     margin-bottom: 12px;
 }
 
 input[type="text"],
-input[type="date"] {
+input[type="date"],
+select {
     min-height: 42px;
     border: 1px solid var(--line);
     border-radius: 6px;
@@ -235,11 +237,14 @@ button:focus-visible {
     }
 
     .todo-table th:nth-child(2),
-    .todo-table td:nth-child(2) {
+    .todo-table td:nth-child(2),
+    .todo-table th:nth-child(3),
+    .todo-table td:nth-child(3) {
         display: none;
     }
 
-    .todo-table tr.is-editing td:nth-child(2) {
+    .todo-table tr.is-editing td:nth-child(2),
+    .todo-table tr.is-editing td:nth-child(3) {
         display: table-cell;
     }
 }

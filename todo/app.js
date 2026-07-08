@@ -9,7 +9,9 @@ const todoRows = document.querySelector("#todoRows");
 const todoForm = document.querySelector("#todoForm");
 const todoText = document.querySelector("#todoText");
 const todoDate = document.querySelector("#todoDate");
+const todoTime = document.querySelector("#todoTime");
 let editingTodoId = null;
+const TIME_OPTIONS = buildTimeOptions();
 
 function loadState() {
     const fallback = { todos: [] };
@@ -28,19 +30,59 @@ function saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+function buildTimeOptions() {
+    const times = [{ value: "", label: "None" }];
+
+    for (let minutes = 0; minutes < 24 * 60; minutes += 30) {
+        const hour = Math.floor(minutes / 60);
+        const minute = minutes % 60;
+        const value = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+        times.push({ value, label: formatTime(value) });
+    }
+
+    return times;
+}
+
+function fillTimeSelect(select, selected = "") {
+    select.replaceChildren();
+
+    for (const option of TIME_OPTIONS) {
+        const element = document.createElement("option");
+        element.value = option.value;
+        element.textContent = option.label;
+        element.selected = option.value === selected;
+        select.appendChild(element);
+    }
+}
+
+function formatTime(value) {
+    if (!value) return "None";
+
+    const [rawHour, minute] = value.split(":").map(Number);
+    const hour = rawHour % 12 || 12;
+    const suffix = rawHour < 12 ? "AM" : "PM";
+    return `${hour}:${String(minute).padStart(2, "0")} ${suffix}`;
+}
+
 function renderTodos() {
     todoRows.replaceChildren();
 
     const todos = [...state.todos].sort((left, right) => {
+        const leftTime = left.time || "";
+        const rightTime = right.time || "";
+
         if (!left.date && right.date) return 1;
         if (left.date && !right.date) return -1;
         if (left.date !== right.date) return String(left.date).localeCompare(String(right.date));
+        if (!leftTime && rightTime) return 1;
+        if (leftTime && !rightTime) return -1;
+        if (leftTime !== rightTime) return leftTime.localeCompare(rightTime);
         return right.id - left.id;
     });
 
     if (todos.length === 0) {
         const emptyRow = document.createElement("tr");
-        emptyRow.innerHTML = '<td colspan="4" class="empty-row">No tasks</td>';
+        emptyRow.innerHTML = '<td colspan="5" class="empty-row">No tasks</td>';
         todoRows.appendChild(emptyRow);
         return;
     }
@@ -59,13 +101,14 @@ function renderTodos() {
         tr.innerHTML = `
             <td></td>
             <td>${todo.date || "-"}</td>
+            <td>${todo.time ? formatTime(todo.time) : "-"}</td>
             <td></td>
             <td></td>
         `;
 
         tr.children[0].textContent = todo.text;
-        tr.children[2].appendChild(todoCheckbox(todo));
-        tr.children[3].appendChild(rowActions([
+        tr.children[3].appendChild(todoCheckbox(todo));
+        tr.children[4].appendChild(rowActions([
             actionButton("Edit", "edit", () => {
                 editingTodoId = todo.id;
                 renderTodos();
@@ -96,6 +139,13 @@ function editTodoRow(todo) {
     dateInput.setAttribute("aria-label", "Edit task date");
     dateCell.appendChild(dateInput);
 
+    const timeCell = document.createElement("td");
+    const timeInput = document.createElement("select");
+    timeInput.className = "row-input";
+    timeInput.setAttribute("aria-label", "Edit task time");
+    fillTimeSelect(timeInput, todo.time || "");
+    timeCell.appendChild(timeInput);
+
     const doneCell = document.createElement("td");
     const doneWrapper = document.createElement("span");
     doneWrapper.className = "check-form";
@@ -117,6 +167,7 @@ function editTodoRow(todo) {
 
             todo.text = text;
             todo.date = dateInput.value || null;
+            todo.time = timeInput.value || null;
             todo.done = doneInput.checked;
             editingTodoId = null;
             saveState();
@@ -128,7 +179,7 @@ function editTodoRow(todo) {
         }),
     ]));
 
-    tr.append(textCell, dateCell, doneCell, actionCell);
+    tr.append(textCell, dateCell, timeCell, doneCell, actionCell);
     setTimeout(() => textInput.focus(), 0);
     return tr;
 }
@@ -195,13 +246,16 @@ todoForm.addEventListener("submit", (event) => {
         id: Date.now(),
         text,
         date: todoDate.value || null,
+        time: todoTime.value || null,
         done: false,
     });
 
     todoText.value = "";
     todoDate.value = "";
+    todoTime.value = "";
     saveState();
     renderTodos();
 });
 
+fillTimeSelect(todoTime);
 renderTodos();
