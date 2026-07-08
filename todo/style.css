@@ -138,6 +138,11 @@ input[type="date"] {
     font: inherit;
 }
 
+.row-input {
+    width: 100%;
+    min-width: 0;
+}
+
 button {
     min-height: 42px;
     border: 0;
@@ -153,6 +158,38 @@ button {
 button:hover,
 button:focus-visible {
     background: var(--accent-dark);
+}
+
+.row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.edit,
+.cancel-edit {
+    background: transparent;
+    color: var(--accent);
+    min-height: 34px;
+    padding: 0 8px;
+}
+
+.cancel-edit {
+    color: var(--muted);
+}
+
+.edit:hover,
+.edit:focus-visible,
+.cancel-edit:hover,
+.cancel-edit:focus-visible {
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--accent-dark);
+}
+
+.save-edit {
+    min-height: 34px;
+    padding: 0 10px;
 }
 
 .delete {
@@ -200,5 +237,9 @@ button:focus-visible {
     .todo-table th:nth-child(2),
     .todo-table td:nth-child(2) {
         display: none;
+    }
+
+    .todo-table tr.is-editing td:nth-child(2) {
+        display: table-cell;
     }
 }

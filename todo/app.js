@@ -9,6 +9,7 @@ const todoRows = document.querySelector("#todoRows");
 const todoForm = document.querySelector("#todoForm");
 const todoText = document.querySelector("#todoText");
 const todoDate = document.querySelector("#todoDate");
+let editingTodoId = null;
 
 function loadState() {
     const fallback = { todos: [] };
@@ -45,6 +46,11 @@ function renderTodos() {
     }
 
     for (const todo of todos) {
+        if (editingTodoId === todo.id) {
+            todoRows.appendChild(editTodoRow(todo));
+            continue;
+        }
+
         const tr = document.createElement("tr");
         if (todo.done) {
             tr.className = "is-done";
@@ -59,9 +65,72 @@ function renderTodos() {
 
         tr.children[0].textContent = todo.text;
         tr.children[2].appendChild(todoCheckbox(todo));
-        tr.children[3].appendChild(deleteButton(todo.id));
+        tr.children[3].appendChild(rowActions([
+            actionButton("Edit", "edit", () => {
+                editingTodoId = todo.id;
+                renderTodos();
+            }),
+            deleteButton(todo.id),
+        ]));
         todoRows.appendChild(tr);
     }
+}
+
+function editTodoRow(todo) {
+    const tr = document.createElement("tr");
+    tr.className = "is-editing";
+
+    const textCell = document.createElement("td");
+    const textInput = document.createElement("input");
+    textInput.type = "text";
+    textInput.className = "row-input";
+    textInput.value = todo.text;
+    textInput.setAttribute("aria-label", "Edit task");
+    textCell.appendChild(textInput);
+
+    const dateCell = document.createElement("td");
+    const dateInput = document.createElement("input");
+    dateInput.type = "date";
+    dateInput.className = "row-input";
+    dateInput.value = todo.date || "";
+    dateInput.setAttribute("aria-label", "Edit task date");
+    dateCell.appendChild(dateInput);
+
+    const doneCell = document.createElement("td");
+    const doneWrapper = document.createElement("span");
+    doneWrapper.className = "check-form";
+    const doneInput = document.createElement("input");
+    doneInput.type = "checkbox";
+    doneInput.checked = todo.done;
+    doneInput.setAttribute("aria-label", "Edit done status");
+    doneWrapper.appendChild(doneInput);
+    doneCell.appendChild(doneWrapper);
+
+    const actionCell = document.createElement("td");
+    actionCell.appendChild(rowActions([
+        actionButton("Save", "save-edit", () => {
+            const text = textInput.value.trim();
+            if (!text) {
+                textInput.focus();
+                return;
+            }
+
+            todo.text = text;
+            todo.date = dateInput.value || null;
+            todo.done = doneInput.checked;
+            editingTodoId = null;
+            saveState();
+            renderTodos();
+        }),
+        actionButton("Cancel", "cancel-edit", () => {
+            editingTodoId = null;
+            renderTodos();
+        }),
+    ]));
+
+    tr.append(textCell, dateCell, doneCell, actionCell);
+    setTimeout(() => textInput.focus(), 0);
+    return tr;
 }
 
 function todoCheckbox(todo) {
@@ -80,6 +149,24 @@ function todoCheckbox(todo) {
 
     wrapper.appendChild(checkbox);
     return wrapper;
+}
+
+function rowActions(buttons) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "row-actions";
+    for (const button of buttons) {
+        wrapper.appendChild(button);
+    }
+    return wrapper;
+}
+
+function actionButton(label, className, onClick) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = className;
+    button.textContent = label;
+    button.addEventListener("click", onClick);
+    return button;
 }
 
 function deleteButton(id) {
