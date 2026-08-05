@@ -27,13 +27,15 @@
         <textarea id="ai-output" rows="2" readonly aria-live="polite"></textarea>
     </form>
 
-    <div style="font-size:18px;" id="date-time"></div>
+    <div style="font-size:48px;" id="date-time"></div>
 </div>
 <br><br>
+<div>
     <a class="weatherwidget-io" href="https://forecast7.com/en/38d28n85d74/jeffersonville/?unit=us" data-label_1="JEFFERSONVILLE, IN" data-label_2="WEATHER" data-theme="original">JEFFERSONVILLE, IN WEATHER</a>
-<script>
-!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-</script>
+        <script>
+            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+        </script>
+</div>
 <div id="medicineTrackerModal" style="display:none; position:fixed; top:8%; left:50%; transform:translateX(-50%); width:min(92%, 560px); max-height:84vh; overflow:auto; background:tan; color:#222; padding:20px; border:1px solid #ccc; border-radius:8px; z-index:2000; box-shadow:0 12px 30px rgba(0,0,0,.22);">
   <h3>Medicine Tracker</h3>
   <table id="medicineTrackerTable" style="width:100%; border-collapse:collapse; margin-top:12px; text-align:center;">
