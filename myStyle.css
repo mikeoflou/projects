@@ -263,10 +263,10 @@ body {
 
 #aiSearchInput { 
     flex: 1 1 auto; 
-    min-width: 180px; 
+    min-width: 250px; 
     padding: 9px 12px; 
-    border: 1px solid rgba(0,0,0,0.25); 
-    border-radius: 8px; 
+    border: 2px solid rgba(0,0,0,0.25); 
+    border-radius: 10px; 
     background: #f5f5dc;
     font-size: 16px; 
     font-weight: normal; 
@@ -282,12 +282,12 @@ body {
 
 #ai-output { 
     flex-basis: 100%; 
-    min-height: 16px; 
+    min-height: 18px; 
     background: #f5f5dc;
-    border: 1px solid rgba(0,0,0,0.25);
+    border: 2px solid rgba(0,0,0,0.25);
     border-radius: 8px;
     color: #064e3b; 
-    font-size: 14px; 
+    font-size: 16px; 
     font-weight: normal; 
     padding: 8px 10px;
     resize: vertical;
